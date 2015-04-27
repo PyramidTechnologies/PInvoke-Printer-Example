@@ -22,7 +22,7 @@ namespace ESCPOSTester.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace ESCPOSTester.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ESCPOSTester.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace ESCPOSTester.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace ESCPOSTester.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Print File.
         /// </summary>
-        internal static string BUTTON_PRINT_FILE {
+        public static string BUTTON_PRINT_FILE {
             get {
                 return ResourceManager.GetString("BUTTON_PRINT_FILE", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace ESCPOSTester.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Print String.
         /// </summary>
-        internal static string BUTTON_PRINT_STRING {
+        public static string BUTTON_PRINT_STRING {
             get {
                 return ResourceManager.GetString("BUTTON_PRINT_STRING", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace ESCPOSTester.Properties {
         /// <summary>
         ///   Looks up a localized string similar to [drop].
         /// </summary>
-        internal static string DROP {
+        public static string DROP {
             get {
                 return ResourceManager.GetString("DROP", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace ESCPOSTester.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Print Bytes from File as ESC/POS Commands.
         /// </summary>
-        internal static string PRINT_DROP_TIP {
+        public static string PRINT_DROP_TIP {
             get {
                 return ResourceManager.GetString("PRINT_DROP_TIP", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace ESCPOSTester.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Print Any File From File System.
         /// </summary>
-        internal static string PRINT_FILE_TIP {
+        public static string PRINT_FILE_TIP {
             get {
                 return ResourceManager.GetString("PRINT_FILE_TIP", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace ESCPOSTester.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Type String in Above Text Box.
         /// </summary>
-        internal static string PRINT_STRING_TIP {
+        public static string PRINT_STRING_TIP {
             get {
                 return ResourceManager.GetString("PRINT_STRING_TIP", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace ESCPOSTester.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Target Printer.
         /// </summary>
-        internal static string TARGET_PRINTER {
+        public static string TARGET_PRINTER {
             get {
                 return ResourceManager.GetString("TARGET_PRINTER", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace ESCPOSTester.Properties {
         /// <summary>
         ///   Looks up a localized string similar to PTI Printer Test Utility.
         /// </summary>
-        internal static string TITLE {
+        public static string TITLE {
             get {
                 return ResourceManager.GetString("TITLE", resourceCulture);
             }
