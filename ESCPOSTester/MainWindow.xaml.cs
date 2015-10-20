@@ -107,20 +107,42 @@ namespace ESCPOSTester
             {
                 // Extract the ASCII formatted hex ESC/POS data... or any data really as long 
                 // as the text is space delimited base 16 bytes
-                var data = ByteUtils.ReadFileContainHexStringASCII(file);
-
-                // Gotta get a pointer on the local heap. Fun fact, the naming suggests that
-                // this would be on the stack but it isn't. Windows no longer has a global heap
-                // per se so these naming conventions are legacy cruft.
-                IntPtr ptr = Marshal.AllocHGlobal(data.Length);
-                Marshal.Copy(data, 0, ptr, data.Length);
-
-
-                RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, ptr, data.Length);
-
-
-                Marshal.FreeHGlobal(ptr);                
+                doPrintSend(ByteUtils.ReadFileContainHexStringASCII(file));             
             }
+        }
+
+        /// <summary>
+        /// Occurs when the mouse is realease and the file is "dropped" on the app
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UI_Drop_Bin(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+            // Just grab the first file in the list if > 1 was dropped
+            var file = files[0];
+
+            if (File.Exists(file))
+            {
+                // PRN is a raw binary dump - treat it as such
+                doPrintSend(File.ReadAllBytes(file));
+            }
+        }
+
+        private void doPrintSend(byte[] data)
+        {
+            // Gotta get a pointer on the local heap. Fun fact, the naming suggests that
+            // this would be on the stack but it isn't. Windows no longer has a global heap
+            // per se so these naming conventions are legacy cruft.
+            IntPtr ptr = Marshal.AllocHGlobal(data.Length);
+            Marshal.Copy(data, 0, ptr, data.Length);
+
+
+            RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, ptr, data.Length);
+
+
+            Marshal.FreeHGlobal(ptr);
         }
 
         /// <summary>

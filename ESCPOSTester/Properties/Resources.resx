@@ -126,11 +126,20 @@
   <data name="DROP" xml:space="preserve">
     <value>[drop]</value>
   </data>
+  <data name="DROP_BIN" xml:space="preserve">
+    <value>[prn]</value>
+  </data>
   <data name="PRINT_DROP_TIP" xml:space="preserve">
     <value>Print Bytes from File as ESC/POS Commands</value>
   </data>
+  <data name="PRINT_DROP_TIP_BIN" xml:space="preserve">
+    <value>Print PRN File</value>
+  </data>
   <data name="PRINT_FILE_TIP" xml:space="preserve">
     <value>Print Any File From File System</value>
+  </data>
+  <data name="PRINT_FILE_TIP_BIN" xml:space="preserve">
+    <value>Print PRN File</value>
   </data>
   <data name="PRINT_STRING_TIP" xml:space="preserve">
     <value>Type String in Above Text Box</value>
