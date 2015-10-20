@@ -12,7 +12,7 @@ mage = '"C:\Program Files (x86)\Microsoft SDKs\Windows\\v7.0A\Bin\mage.exe"'
 signtool = '"C:\Program Files (x86)\Microsoft SDKs\Windows\\v7.1A\Bin\signtool.exe"'
 
 #SHA 1 Hash (even though this is a SHA2 cert)
-hash = "5773cd34db39ae64e8fda160ff7be187a70e9437"
+hash = "D93BF0CCBD2880A4CD2738A34DF66BC6B7DD48C8"
 
 #Timestamp URL
 timestamp = 'http://timestamp.digicert.com'
