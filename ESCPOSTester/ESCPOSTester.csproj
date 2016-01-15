@@ -28,7 +28,7 @@
     <UpdateUrl>\\server02\AppShare\ESCPOSTester\</UpdateUrl>
     <ProductName>ESCPOSTester</ProductName>
     <PublisherName>Pyramid Technologies</PublisherName>
-    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationRevision>3</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -93,6 +93,7 @@
     </ApplicationDefinition>
     <Compile Include="ByteUtils.cs" />
     <Compile Include="RawPrintHelper.cs" />
+    <Compile Include="Utilities.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

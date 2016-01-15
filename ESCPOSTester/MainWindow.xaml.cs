@@ -19,6 +19,7 @@ namespace ESCPOSTester
         #region Fields
         private string _currentPrinter = "";
         private string _currentString = DEFAULT_TEXT;
+        private string _currentHex = "";
         #endregion
 
 
@@ -54,6 +55,19 @@ namespace ESCPOSTester
                 NotifyPropertyChanged("CurrentString");
             }
         }
+
+        /// <summary>
+        /// Gets or sets the hex commands to send to printer over USB
+        /// </summary>
+        public string CurrentHex
+        {
+            get { return _currentHex; }
+            set
+            {
+                _currentHex = value;
+                NotifyPropertyChanged("CurrentHex");
+            }
+        }
         #endregion
 
 
@@ -68,6 +82,23 @@ namespace ESCPOSTester
         private void printString_Click(object sender, RoutedEventArgs e)
         {
             RawPrinterHelper.SendStringToPrinter(CurrentPrinter, CurrentString);
+        }
+
+        /// <summary>
+        /// Parse the 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnSendHex(object sender, RoutedEventArgs e)
+        {
+            var raw = Utilities.StringToByteArray(CurrentHex);
+
+            IntPtr pBytes = Marshal.AllocHGlobal(raw.Length);
+            Marshal.Copy(raw, 0, pBytes, raw.Length); 
+            Int32 dwCount = raw.Length;
+            RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, pBytes, dwCount);
+
+            Marshal.FreeHGlobal(pBytes);
         }
 
         private void printFile_Click(object sender, RoutedEventArgs e)
@@ -188,6 +219,8 @@ namespace ESCPOSTester
         }
 
         #endregion
+
+
 
     }
 }
