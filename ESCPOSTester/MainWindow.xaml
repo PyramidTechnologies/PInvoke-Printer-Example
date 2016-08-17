@@ -32,5 +32,6 @@
         <Button x:Name="newline" Content="Cut" Grid.Column="2" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Click="Cut_Click" HorizontalContentAlignment="Center" Margin="0,10,0,0" Width="100"/>
         <Button x:Name="Eject" Content="Eject" Grid.Column="2" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Bottom" Width="100" HorizontalContentAlignment="Center"  VerticalContentAlignment="Center" Click="Eject_Click" Margin="0,0,0,10"/>
         <Button x:Name="present" Content="Present" Grid.Column="2" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Width="100" Click="Present_Click"/>
+        <Button x:Name="RandomBtn" Content="Start Random" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,10" Grid.Row="1" VerticalAlignment="Bottom" Width="74" Click="Random_Click" ToolTip="Send random english text to selected printer"/>
     </Grid>
 </Window>

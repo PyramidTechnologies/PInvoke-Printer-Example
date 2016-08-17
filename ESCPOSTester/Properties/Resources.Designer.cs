@@ -151,6 +151,27 @@ namespace ESCPOSTester.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Project Gutenberg EBook of The Adventures of Sherlock Holmes
+        ///by Sir Arthur Conan Doyle
+        ///(#15 in our series by Sir Arthur Conan Doyle)
+        ///
+        ///Copyright laws are changing all over the world. Be sure to check the
+        ///copyright laws for your country before downloading or redistributing
+        ///this or any other Project Gutenberg eBook.
+        ///
+        ///This header should be the first thing seen when viewing this Project
+        ///Gutenberg file.  Please do not remove it.  Do not change or edit the
+        ///header without written permission.
+        ///
+        ///Please [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string text {
+            get {
+                return ResourceManager.GetString("text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PTI Printer Test Utility.
         /// </summary>
         public static string TITLE {
