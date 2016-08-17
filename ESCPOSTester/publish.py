@@ -1,9 +1,13 @@
 from xml.dom import minidom
 from subprocess import check_output
+import os
+
+# GUID: 99211924-9BC1-4A3A-B661-948D3C1A6347
 
 #Set this to the Visual Studio output directory
 path = 'P:\ESCPOSTester'
 app = "ESCPOSTester"
+
 
 #Path to Mage.exe
 mage = '"C:\Program Files (x86)\Microsoft SDKs\Windows\\v7.0A\Bin\mage.exe"'
@@ -12,7 +16,7 @@ mage = '"C:\Program Files (x86)\Microsoft SDKs\Windows\\v7.0A\Bin\mage.exe"'
 signtool = '"C:\Program Files (x86)\Microsoft SDKs\Windows\\v7.1A\Bin\signtool.exe"'
 
 #SHA 1 Hash (even though this is a SHA2 cert)
-hash = "D93BF0CCBD2880A4CD2738A34DF66BC6B7DD48C8"
+hash = os.environ['EV_CERT_ID']
 
 #Timestamp URL
 timestamp = 'http://timestamp.digicert.com'
@@ -34,3 +38,4 @@ applica = '{} -update "{}{}{}.application" -appmanifest "{}" -ch {} -ti "{}"'.fo
 check_output(setupst, shell=True)
 check_output(manifst, shell=True)
 check_output(applica, shell=True)
+
