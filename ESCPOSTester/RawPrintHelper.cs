@@ -56,7 +56,7 @@ namespace ESCPOSTester
             DOCINFOA di = new DOCINFOA();
             bool bSuccess = false; // Assume failure unless you specifically succeed.
 
-            di.pDocName = "My C#.NET RAW Document";
+            di.pDocName = "ESCPOSTTester";
             di.pDataType = "RAW";
 
             // Open the printer.

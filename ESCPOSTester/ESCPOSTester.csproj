@@ -23,13 +23,14 @@
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
     <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
+    <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <UpdateUrl>\\server02\AppShare\ESCPOSTester\</UpdateUrl>
     <ProductName>ESCPOSTester</ProductName>
     <PublisherName>Pyramid Technologies</PublisherName>
-    <ApplicationRevision>4</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <MinimumRequiredVersion>1.1.0.0</MinimumRequiredVersion>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>1.1.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -91,7 +92,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ByteUtils.cs" />
     <Compile Include="RawPrintHelper.cs" />
     <Compile Include="Utilities.cs" />
     <Page Include="MainWindow.xaml">
@@ -129,7 +129,6 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="ESCPOSTester_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -143,10 +142,11 @@
     <Content Include="drag_and_drop-128_alt.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Resources\text.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="publish.py" />
   </ItemGroup>
