@@ -151,7 +151,8 @@ namespace ESCPOSTester
             {
                 // Extract the ASCII formatted hex ESC/POS data... or any data really as long 
                 // as the text is space delimited base 16 bytes
-                doPrintSend(ByteUtils.ReadFileContainHexStringASCII(file));             
+                var bytes = File.ReadAllBytes(file);
+                doPrintSend(bytes);             
             }
         }
 
@@ -216,6 +217,15 @@ namespace ESCPOSTester
             {
                 availablePrinters.Items.Add(printerName);
             }
+
+            if(string.IsNullOrEmpty(Properties.Settings.Default.LAST_PRINTER)) {
+                Properties.Settings.Default.LAST_PRINTER = CurrentPrinter;
+            }
+            
+            if(availablePrinters.Items.Contains(Properties.Settings.Default.LAST_PRINTER))
+            {
+                availablePrinters.SelectedItem = Properties.Settings.Default.LAST_PRINTER;
+            }
         }
         #endregion
 
@@ -232,5 +242,11 @@ namespace ESCPOSTester
         }
 
         #endregion
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            Properties.Settings.Default.LAST_PRINTER = CurrentPrinter;
+            Properties.Settings.Default.Save();
+        }
     }
 }
