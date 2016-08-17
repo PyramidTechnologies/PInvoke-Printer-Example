@@ -224,7 +224,8 @@ namespace ESCPOSTester
             
             if(availablePrinters.Items.Contains(Properties.Settings.Default.LAST_PRINTER))
             {
-                availablePrinters.SelectedItem = Properties.Settings.Default.LAST_PRINTER;
+                CurrentPrinter = Properties.Settings.Default.LAST_PRINTER;
+                availablePrinters.SelectedItem = CurrentPrinter;
             }
         }
         #endregion
