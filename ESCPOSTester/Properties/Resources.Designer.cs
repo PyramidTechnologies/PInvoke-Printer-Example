@@ -88,7 +88,7 @@ namespace ESCPOSTester.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [prn].
+        ///   Looks up a localized string similar to [bin].
         /// </summary>
         public static string DROP_BIN {
             get {

@@ -127,7 +127,7 @@
     <value>[drop]</value>
   </data>
   <data name="DROP_BIN" xml:space="preserve">
-    <value>[prn]</value>
+    <value>[bin]</value>
   </data>
   <data name="PRINT_DROP_TIP" xml:space="preserve">
     <value>Print Bytes from File as ESC/POS Commands</value>
