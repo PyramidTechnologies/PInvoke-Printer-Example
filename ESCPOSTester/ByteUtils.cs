@@ -19,24 +19,26 @@ namespace ESCPOSTester
             var list = new List<string>();
 
             // Read the file and display it line by line.
-            System.IO.StreamReader file =
-                new System.IO.StreamReader(absFilePath);
-            while ((line = file.ReadLine()) != null)
+            using (System.IO.StreamReader file =
+                new System.IO.StreamReader(absFilePath))
             {
-                list.Add(line.Replace(" ", string.Empty));
+                while ((line = file.ReadLine()) != null)
+                {
+                    list.Add(line.Replace(" ", string.Empty));
+                }
+
+                var bList = new List<byte>();
+
+                foreach (string s in list)
+                {
+                    foreach (byte b in StringToByteArrayFastest(s))
+                        bList.Add(b);
+                }
+
+                return bList.ToArray<byte>();
             }
-
-            file.Close();
-            var bList = new List<byte>();
-
-            foreach (string s in list)
-            {
-                foreach (byte b in StringToByteArrayFastest(s))
-                    bList.Add(b);
-            }
-
-            return bList.ToArray<byte>();
         }
+        
 
         /// <summary>
         /// Convert a string into a byte array

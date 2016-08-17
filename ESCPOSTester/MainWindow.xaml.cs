@@ -4,6 +4,7 @@ using System.Drawing.Printing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace ESCPOSTester
 {
@@ -89,16 +90,28 @@ namespace ESCPOSTester
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnSendHex(object sender, RoutedEventArgs e)
+        private void SendCustomHex_Click(object sender, RoutedEventArgs e)
         {
             var raw = Utilities.StringToByteArray(CurrentHex);
+            doPrintSend(raw);
+        }
 
-            IntPtr pBytes = Marshal.AllocHGlobal(raw.Length);
-            Marshal.Copy(raw, 0, pBytes, raw.Length); 
-            Int32 dwCount = raw.Length;
-            RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, pBytes, dwCount);
+        private void Cut_Click(object sender, RoutedEventArgs e)
+        {
+            var raw = new byte[] { 0x1B, 0x69 };
+            doPrintSend(raw);
+        }
 
-            Marshal.FreeHGlobal(pBytes);
+        private void Present_Click(object sender, RoutedEventArgs e)
+        {
+            var raw = new byte[] { 0x1D, 0x65, 0x03, 0x0C };
+            doPrintSend(raw);
+        }
+
+        private void Eject_Click(object sender, RoutedEventArgs e)
+        {
+            var raw = new byte[] { 0x1D, 0x65, 0x05 };
+            doPrintSend(raw);
         }
 
         private void printFile_Click(object sender, RoutedEventArgs e)
@@ -127,7 +140,7 @@ namespace ESCPOSTester
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void UI_Drop(object sender, DragEventArgs e)
+        private void UI_PrintTxt(object sender, DragEventArgs e)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 
@@ -147,7 +160,7 @@ namespace ESCPOSTester
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void UI_Drop_Bin(object sender, DragEventArgs e)
+        private void UI_PrintBin(object sender, DragEventArgs e)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 
@@ -219,8 +232,5 @@ namespace ESCPOSTester
         }
 
         #endregion
-
-
-
     }
 }

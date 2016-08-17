@@ -42,6 +42,9 @@ namespace ESCPOSTester
         [DllImport("winspool.Drv", EntryPoint = "WritePrinter", SetLastError = true, ExactSpelling = true, CallingConvention = CallingConvention.StdCall)]
         public static extern bool WritePrinter(IntPtr hPrinter, IntPtr pBytes, Int32 dwCount, out Int32 dwWritten);
 
+        [DllImport("winspool.drv", EntryPoint = "ReadPrinter", SetLastError = true, ExactSpelling = true, CallingConvention = CallingConvention.StdCall)]
+        static extern bool ReadPrinter(IntPtr hPrinter, [MarshalAs(UnmanagedType.LPStr)] StringBuilder pBuf, int cbBuf, out int pNoBytesRead);
+
         // SendBytesToPrinter()
         // When the function is given a printer name and an unmanaged array
         // of bytes, the function sends those bytes to the print queue.
@@ -67,7 +70,11 @@ namespace ESCPOSTester
                     {
                         // Write your bytes.
                         bSuccess = WritePrinter(hPrinter, pBytes, dwCount, out dwWritten);
-                        EndPagePrinter(hPrinter);
+                        //var sb = new StringBuilder(65536);
+                        //int read;
+                        //ReadPrinter(hPrinter, sb, sb.Capacity, out read);
+                        //EndPagePrinter(hPrinter);
+                        //Console.WriteLine(sb.ToString());
                     }
                     EndDocPrinter(hPrinter);
                 }
@@ -84,30 +91,32 @@ namespace ESCPOSTester
 
         public static bool SendFileToPrinter(string szPrinterName, string szFileName)
         {
-            // Open the file.
-            FileStream fs = new FileStream(szFileName, FileMode.Open);
-            // Create a BinaryReader on the file.
-            BinaryReader br = new BinaryReader(fs);
-            // Dim an array of bytes big enough to hold the file's contents.
-            Byte[] bytes = new Byte[fs.Length];
-            bool bSuccess = false;
-            // Your unmanaged pointer.
-            IntPtr pUnmanagedBytes = new IntPtr(0);
-            int nLength;
+            // Open the file
+            using (FileStream fs = new FileStream(szFileName, FileMode.Open))
+            using(BinaryReader br = new BinaryReader(fs))
+            {
+                // Dim an array of bytes big enough to hold the file's contents.
+                Byte[] bytes = new Byte[fs.Length];
+                bool bSuccess = false;
+                // Your unmanaged pointer.
+                IntPtr pUnmanagedBytes = new IntPtr(0);
+                int nLength;
 
-            nLength = Convert.ToInt32(fs.Length);
-            // Read the contents of the file into the array.
-            bytes = br.ReadBytes(nLength);
-            // Allocate some unmanaged memory for those bytes.
-            pUnmanagedBytes = Marshal.AllocCoTaskMem(nLength);
-            // Copy the managed byte array into the unmanaged array.
-            Marshal.Copy(bytes, 0, pUnmanagedBytes, nLength);
-            // Send the unmanaged bytes to the printer.
-            bSuccess = SendBytesToPrinter(szPrinterName, pUnmanagedBytes, nLength);
-            // Free the unmanaged memory that you allocated earlier.
-            Marshal.FreeCoTaskMem(pUnmanagedBytes);
-            return bSuccess;
+                nLength = Convert.ToInt32(fs.Length);
+                // Read the contents of the file into the array.
+                bytes = br.ReadBytes(nLength);
+                // Allocate some unmanaged memory for those bytes.
+                pUnmanagedBytes = Marshal.AllocCoTaskMem(nLength);
+                // Copy the managed byte array into the unmanaged array.
+                Marshal.Copy(bytes, 0, pUnmanagedBytes, nLength);
+                // Send the unmanaged bytes to the printer.
+                bSuccess = SendBytesToPrinter(szPrinterName, pUnmanagedBytes, nLength);
+                // Free the unmanaged memory that you allocated earlier.
+                Marshal.FreeCoTaskMem(pUnmanagedBytes);
+                return bSuccess;
+            }
         }
+     
         public static bool SendStringToPrinter(string szPrinterName, string szString)
         {
             IntPtr pBytes;
@@ -122,5 +131,6 @@ namespace ESCPOSTester
             Marshal.FreeCoTaskMem(pBytes);
             return true;
         }
+ 
     }
 }
