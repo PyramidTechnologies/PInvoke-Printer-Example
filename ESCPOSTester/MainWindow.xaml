@@ -46,6 +46,10 @@
 
         </Grid>
 
-        <Button x:Name="RandomBtn" Content="Start Random" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,10" Grid.Row="1" VerticalAlignment="Bottom" Width="74" Click="Random_Click" ToolTip="Send Sherlock Holmes text to target"/>
+        <Button x:Name="RandomBtn" Content="Start Random" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,10" Grid.Row="1" 
+                VerticalAlignment="Bottom" Width="74" Click="Random_Click" ToolTip="Send Sherlock Holmes text to target"/>
+        <TextBox x:Name="txtTicketCount" Grid.ColumnSpan="2" Grid.Column="1" HorizontalAlignment="Left" Height="23" 
+                 PreviewTextInput="txtTicketCount_PreviewTextInput" DataObject.Pasting="txtTicketCount_Pasting"
+                 Margin="142,185,0,0" Grid.Row="1" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="30"/>
     </Grid>
 </Window>
