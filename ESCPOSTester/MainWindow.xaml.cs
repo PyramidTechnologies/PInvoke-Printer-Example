@@ -5,6 +5,8 @@ using System.Drawing.Printing;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -119,6 +121,8 @@ namespace ESCPOSTester
             InitializeComponent();
 
             DataContext = this;
+
+            CurrentHex = "0x1B 0x40";
         }
         #endregion
 
@@ -135,8 +139,13 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private void SendCustomHex_Click(object sender, RoutedEventArgs e)
         {
-            var raw = Utilities.StringToByteArray(CurrentHex);
-            doPrintSend(raw);
+            try
+            {
+                var raw = Utilities.StringToByteArray(CurrentHex);
+                doPrintSend(raw);
+            }
+            catch (Exception)
+            { }
         }
 
         /// <summary>
@@ -146,7 +155,6 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private void Cut_Click(object sender, RoutedEventArgs e)
         {
-            doPrintSend(ESC_InitPrinter);
             doPrintSend(ESC_CutPaper);
         }
 
@@ -157,7 +165,6 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private void Present_Click(object sender, RoutedEventArgs e)
         {
-            doPrintSend(ESC_InitPrinter);
             doPrintSend(ESC_Eject12Steps);
         }
         /// <summary>
@@ -167,7 +174,6 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private void Eject_Click(object sender, RoutedEventArgs e)
         {
-            doPrintSend(ESC_InitPrinter);
             doPrintSend(ESC_Eject);
         }
 
@@ -178,7 +184,6 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private void Reject_Click(object sender, RoutedEventArgs e)
         {
-            doPrintSend(ESC_InitPrinter);
             doPrintSend(ESC_Retract);
         }
 
@@ -201,19 +206,32 @@ namespace ESCPOSTester
 
 
         /// <summary>
-        /// Used for testing a printer by sending random data to it forever
+        /// Used for testing a printer by sending random data to it forever or for x number of tickets
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Random_Click(object sender, RoutedEventArgs e)
         {
+            // Negative number will loop forever
+            var stopAt = -1;
+            Int32.TryParse(txtTicketCount.Text, out stopAt);
+
+
             lock(m_lock) {
 
                 if (!isRandomRunning)
                 {
-                    Task.Factory.StartNew(() => randomTask());
+
                     isRandomRunning = true;
                     RandomBtn.Content = "Stop Random";
+
+                    // Run task and if we return, stop the test
+                    Task.Factory.StartNew(() =>{
+                        randomTask(stopAt);
+                        isRandomRunning = false;
+                        RandomBtn.Content = "Start Random";
+                    });
+
                 }
                 else
                 {
@@ -227,7 +245,8 @@ namespace ESCPOSTester
         /// <summary>
         /// Performs random prints of random lengths with random time between tickets.
         /// </summary>
-        private void randomTask()
+        /// <param name="runCount">Number of tickets to printer. Negative value will printer tickets forever.</param>
+        private void randomTask(int runCount)
         {
             Random rnd = new Random((int)DateTime.Now.Ticks);
 
@@ -238,11 +257,21 @@ namespace ESCPOSTester
             const int lineCount = 128457;
             const int timeBetween = 7000;
             const int minLineCount = 40;
-            const int maxLineCount = 140;
+            const int maxLineCount = 100;
 
             int rejectAt = 0;
-            while (true)
+            int counter = 0;
+            char[] buffer = new char[64];
+
+            StringBuilder sb = new StringBuilder();
+            while (runCount != 0)
             {
+                // Do not decrement negative numbers
+                if (runCount > 0)
+                {
+                    runCount--;
+                    DoOnUIThread(()=>txtTicketCount.Text = string.Format("{0}", runCount));
+                }
 
                 // Pick random starting line, random line count (file is 128457 lines
                 var start = rnd.Next(0, lineCount - maxLineCount);
@@ -254,19 +283,30 @@ namespace ESCPOSTester
                     // Throw away data until we get to starting point
                     while (start-- > 0)
                     {
-                        reader.ReadLine();
+                        reader.Read();
                     }
                     while (len-- > 0)
                     {
-                        bytes.AddRange(System.Text.ASCIIEncoding.ASCII.GetBytes(reader.ReadLine()));
-
-                        // Cap the ticket length
-                        if (bytes.Count > 3000)
+                        var next = reader.ReadLine();
+                        if (!string.IsNullOrEmpty(next))
                         {
-                            break;
+                            sb.Append(buffer);
+                            sb.Append('\n');
                         }
                     }
           
+                }
+
+                // Add count to end of print string for sniffing
+                counter++;
+                sb.AppendFormat(string.Format("\n\t\t\t<<{0}>>", counter));
+                if (sb.Length % 2 != 0)
+                {
+                    sb.Append(' ');
+                }
+                foreach (char c in sb.ToString().ToCharArray())
+                {
+                    bytes.Add((byte)c);
                 }
 
                 doPrintSend(bytes.ToArray());
@@ -391,6 +431,23 @@ namespace ESCPOSTester
         }
 
         /// <summary>
+        /// Runs the specified action on the UI thread. Please be sure 
+        /// to mark your delegates as async before passing them to this function.
+        /// </summary>
+        /// <param name="action"></param>
+        private void DoOnUIThread(Action action)
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(action);
+            }
+            else
+            {
+                action.Invoke();
+            }
+        }
+
+        /// <summary>
         /// Shows the proper mouse animation on drag-over
         /// </summary>
         /// <param name="sender"></param>
@@ -444,10 +501,45 @@ namespace ESCPOSTester
 
         #endregion
 
+        /// <summary>
+        /// Returns true if the string is a valid number
+        /// </summary>
+        /// <param name="text">input string</param>
+        /// <returns>bool</returns>
+        private static bool IsNumericText(string text)
+        {
+            Regex regex = new Regex("[^0-9.-]+"); //regex that matches disallowed text
+            return !regex.IsMatch(text);
+        }
+
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             Properties.Settings.Default.LAST_PRINTER = CurrentPrinter;
             Properties.Settings.Default.Save();
         }
+
+        #region Numeric Inputbox Tests
+        private void txtTicketCount_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            // Test for numeric content
+            e.Handled = !IsNumericText(e.Text);
+        }
+
+        private void txtTicketCount_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(String)))
+            {
+                String text = (String)e.DataObject.GetData(typeof(String));
+                if (!IsNumericText(text))
+                {
+                    e.CancelCommand();
+                }
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
+        #endregion
     }
 }

@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Loaded="Window_Loaded"
         xmlns:p="clr-namespace:ESCPOSTester.Properties"
-        Height="356" Width="562" Title="PTI Printer Test Utility" Icon="drag_and_drop-128_alt.ico" Closing="Window_Closing">
+        Height="356" Width="562" Title="PTI Printer Test Utility - 1.0.0" Closing="Window_Closing">
     <Window.Resources>
         <ResourceDictionary Source="theme.xaml"/>
     </Window.Resources>
@@ -17,17 +17,17 @@
             <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
         <Button x:Name="printString" Content="{x:Static p:Resources.BUTTON_PRINT_STRING}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="75" Grid.Column="0" Grid.Row="1" Click="printString_Click" 
-                ToolTip="{x:Static p:Resources.PRINT_STRING_TIP}" VerticalContentAlignment="Center" Margin="0,0,0,10"/>
+                ToolTip="{x:Static p:Resources.PRINT_STRING_TIP}" VerticalContentAlignment="Center" Margin="0,0,0,10" Visibility="Hidden"/>
         <Button x:Name="printFile" Content="{x:Static p:Resources.BUTTON_PRINT_FILE}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="74" Grid.Row="1" Click="printFile_Click" ToolTip="{x:Static p:Resources.PRINT_FILE_TIP}"/>
         <ComboBox x:Name="availablePrinters" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" SelectedItem="{Binding CurrentPrinter, Mode=TwoWay, IsAsync=True}" />
-        <TextBox x:Name="printString1" Height="23" Grid.Row="1" TextWrapping="Wrap" Text="{Binding Text, ElementName=availablePrinters, IsAsync=True}" VerticalAlignment="Top" Margin="10,10,10,0"/>
+        <TextBox x:Name="printString1" Height="23" Grid.Row="1" TextWrapping="Wrap" Text="{Binding Text, ElementName=availablePrinters, IsAsync=True}" VerticalAlignment="Top" Margin="10,10,10,0" Visibility="Hidden"/>
         <Rectangle Grid.Column="1" Fill="#FFF4F4F5" HorizontalAlignment="Center" Height="100" Stroke="Black" VerticalAlignment="Center" Width="100" AllowDrop="True" ToolTip="{x:Static p:Resources.PRINT_DROP_TIP}" Drop="UI_PrintTxt" DragEnter="UI_DragEnter"/>
         <Label Content="{x:Static p:Resources.DROP}" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" AllowDrop="True" DragEnter="UI_DragEnter" Drop="UI_PrintTxt"/>
         <Label Content="{x:Static p:Resources.TARGET_PRINTER}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0"/>
 
         <Rectangle Grid.Column="2" Fill="#FFF4F4F5" HorizontalAlignment="Center" Height="100" Stroke="Black" VerticalAlignment="Center" Width="100" AllowDrop="True" ToolTip="{x:Static p:Resources.PRINT_DROP_TIP_BIN}" Drop="UI_PrintBin" DragEnter="UI_DragEnter"/>
         <Label Content="{x:Static p:Resources.DROP_BIN}" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" AllowDrop="True" DragEnter="UI_DragEnter" Drop="UI_PrintBin"/>
-        <TextBox Grid.Column="1" Height="23" Grid.Row="1" TextWrapping="Wrap" Text="{Binding CurrentHex, Mode=TwoWay, IsAsync=True}" VerticalAlignment="Top" Margin="10,10,10,0" />
+        <TextBox Grid.Column="1" Height="22" Grid.Row="1" TextWrapping="Wrap" Text="{Binding CurrentHex, Mode=TwoWay, IsAsync=True}" VerticalAlignment="Top" Margin="10,125,10,0" />
         <Button x:Name="SendCustomHex" Content="Send Hex" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75" Grid.Column="1" Grid.Row="1" Click="SendCustomHex_Click" ToolTip="Send Raw Hex" />
 
         <Grid  Grid.Column="2" Grid.Row="1">
@@ -46,6 +46,10 @@
 
         </Grid>
 
-        <Button x:Name="RandomBtn" Content="Start Random" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,10" Grid.Row="1" VerticalAlignment="Bottom" Width="74" Click="Random_Click" ToolTip="Send Sherlock Holmes text to target"/>
+        <Button x:Name="RandomBtn" Content="Start Random" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,10" Grid.Row="1" 
+                VerticalAlignment="Bottom" Width="74" Click="Random_Click" ToolTip="Send Sherlock Holmes text to target" Visibility="Hidden"/>
+        <TextBox x:Name="txtTicketCount" Grid.ColumnSpan="2" Grid.Column="1" HorizontalAlignment="Left" Height="23" 
+                 PreviewTextInput="txtTicketCount_PreviewTextInput" DataObject.Pasting="txtTicketCount_Pasting"
+                 Margin="142,185,0,0" Grid.Row="1" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="30" Visibility="Hidden"/>
     </Grid>
 </Window>

@@ -29,7 +29,7 @@
     <ProductName>ESCPOSTester</ProductName>
     <PublisherName>Pyramid Technologies</PublisherName>
     <MinimumRequiredVersion>1.1.0.0</MinimumRequiredVersion>
-    <ApplicationRevision>4</ApplicationRevision>
+    <ApplicationRevision>5</ApplicationRevision>
     <ApplicationVersion>1.2.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -56,7 +56,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>drag_and_drop-128_alt.ico</ApplicationIcon>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>F9EEA7D6B0711BA157D9C853B8C1C58F250882B1</ManifestCertificateThumbprint>
@@ -69,6 +69,12 @@
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>ESCPOSTester.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -139,16 +145,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="drag_and_drop-128_alt.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <EmbeddedResource Include="Resources\text.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\text.txt" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <Resource Include="license.txt" />
+    <None Include="icon.ico" />
     <Content Include="publish.py" />
   </ItemGroup>
   <ItemGroup>
