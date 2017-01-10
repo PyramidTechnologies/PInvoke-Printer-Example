@@ -121,6 +121,8 @@ namespace ESCPOSTester
             InitializeComponent();
 
             DataContext = this;
+
+            CurrentHex = "0x1B 0x40";
         }
         #endregion
 
@@ -137,8 +139,13 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private void SendCustomHex_Click(object sender, RoutedEventArgs e)
         {
-            var raw = Utilities.StringToByteArray(CurrentHex);
-            doPrintSend(raw);
+            try
+            {
+                var raw = Utilities.StringToByteArray(CurrentHex);
+                doPrintSend(raw);
+            }
+            catch (Exception)
+            { }
         }
 
         /// <summary>
@@ -148,7 +155,6 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private void Cut_Click(object sender, RoutedEventArgs e)
         {
-            doPrintSend(ESC_InitPrinter);
             doPrintSend(ESC_CutPaper);
         }
 
@@ -159,7 +165,6 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private void Present_Click(object sender, RoutedEventArgs e)
         {
-            doPrintSend(ESC_InitPrinter);
             doPrintSend(ESC_Eject12Steps);
         }
         /// <summary>
@@ -169,7 +174,6 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private void Eject_Click(object sender, RoutedEventArgs e)
         {
-            doPrintSend(ESC_InitPrinter);
             doPrintSend(ESC_Eject);
         }
 
@@ -180,7 +184,6 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private void Reject_Click(object sender, RoutedEventArgs e)
         {
-            doPrintSend(ESC_InitPrinter);
             doPrintSend(ESC_Retract);
         }
 

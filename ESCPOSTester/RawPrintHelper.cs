@@ -114,10 +114,17 @@ namespace ESCPOSTester
         /// <returns>bool</returns>
         public static bool SendBytesToPrinter(string szPrinterName, IntPtr pBytes, Int32 dwCount)
         {
+           
             Int32 dwError = 0, dwWritten = 0;
             IntPtr hPrinter = new IntPtr(0);
             DOCINFOA di = new DOCINFOA();
             bool bSuccess = false; // Assume failure unless you specifically succeed.
+
+            // Can't send empty string
+            if (string.IsNullOrEmpty(szPrinterName))
+            {
+                return bSuccess;
+            }
 
             di.pDocName = "ESCPOSTTester";
             di.pDataType = "RAW";
