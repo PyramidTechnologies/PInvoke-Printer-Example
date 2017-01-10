@@ -5,6 +5,7 @@ using System.Drawing.Printing;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -217,6 +218,10 @@ namespace ESCPOSTester
 
                 if (!isRandomRunning)
                 {
+
+                    isRandomRunning = true;
+                    RandomBtn.Content = "Stop Random";
+
                     // Run task and if we return, stop the test
                     Task.Factory.StartNew(() =>{
                         randomTask(stopAt);
@@ -224,8 +229,6 @@ namespace ESCPOSTester
                         RandomBtn.Content = "Start Random";
                     });
 
-                    isRandomRunning = true;
-                    RandomBtn.Content = "Stop Random";
                 }
                 else
                 {
@@ -251,9 +254,13 @@ namespace ESCPOSTester
             const int lineCount = 128457;
             const int timeBetween = 7000;
             const int minLineCount = 40;
-            const int maxLineCount = 140;
+            const int maxLineCount = 100;
 
             int rejectAt = 0;
+            int counter = 0;
+            char[] buffer = new char[64];
+
+            StringBuilder sb = new StringBuilder();
             while (runCount != 0)
             {
                 // Do not decrement negative numbers
@@ -273,19 +280,30 @@ namespace ESCPOSTester
                     // Throw away data until we get to starting point
                     while (start-- > 0)
                     {
-                        reader.ReadLine();
+                        reader.Read();
                     }
                     while (len-- > 0)
                     {
-                        bytes.AddRange(System.Text.ASCIIEncoding.ASCII.GetBytes(reader.ReadLine()));
-
-                        // Cap the ticket length
-                        if (bytes.Count > 3000)
+                        var next = reader.ReadLine();
+                        if (!string.IsNullOrEmpty(next))
                         {
-                            break;
+                            sb.Append(buffer);
+                            sb.Append('\n');
                         }
                     }
           
+                }
+
+                // Add count to end of print string for sniffing
+                counter++;
+                sb.AppendFormat(string.Format("\n\t\t\t<<{0}>>", counter));
+                if (sb.Length % 2 != 0)
+                {
+                    sb.Append(' ');
+                }
+                foreach (char c in sb.ToString().ToCharArray())
+                {
+                    bytes.Add((byte)c);
                 }
 
                 doPrintSend(bytes.ToArray());
