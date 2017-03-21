@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Printing;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -216,6 +214,9 @@ namespace ESCPOSTester
             var stopAt = -1;
             Int32.TryParse(txtTicketCount.Text, out stopAt);
 
+            var between = -1;
+            Int32.TryParse(txtTimeBetweenMs.Text, out between);
+
 
             lock(m_lock) {
 
@@ -227,9 +228,9 @@ namespace ESCPOSTester
 
                     // Run task and if we return, stop the test
                     Task.Factory.StartNew(() =>{
-                        randomTask(stopAt);
+                        randomTask(stopAt, between);
                         isRandomRunning = false;
-                        RandomBtn.Content = "Start Random";
+                        DoOnUIThread(() => RandomBtn.Content = "Start Random");
                     });
 
                 }
@@ -246,23 +247,21 @@ namespace ESCPOSTester
         /// Performs random prints of random lengths with random time between tickets.
         /// </summary>
         /// <param name="runCount">Number of tickets to printer. Negative value will printer tickets forever.</param>
-        private void randomTask(int runCount)
+        /// <param name="between">time is ms between prints</param>
+        private void randomTask(int runCount, int between)
         {
             Random rnd = new Random((int)DateTime.Now.Ticks);
 
-            var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = "ESCPOSTester.Resources.text.txt";
-            var bytes = new List<byte>();
-
             const int lineCount = 128457;
-            const int timeBetween = 7000;
-            const int minLineCount = 40;
-            const int maxLineCount = 100;
+            int timeBetween = between == -1 ? 7000 : between;
+
+
+            const int minLineCount = 20;
+            const int maxLineCount = 45;
 
             int rejectAt = 0;
             int counter = 0;
-            char[] buffer = new char[64];
-
+   
             StringBuilder sb = new StringBuilder();
             while (runCount != 0)
             {
@@ -277,40 +276,36 @@ namespace ESCPOSTester
                 var start = rnd.Next(0, lineCount - maxLineCount);
                 var len = rnd.Next(minLineCount, maxLineCount);
 
-                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-                using (StreamReader reader = new StreamReader(stream))
+                // ~32 chars per line
+                var expectedStrLen = 32 * len;
+
+                using (var reader = new StringReader(Properties.Resources.text))
                 {
+
+                    // Add count to end of print string for sniffing      
+                    sb.AppendFormat(string.Format("\n\t\t\t<<Ticker #{0}, Len: {1}>>\n", counter++, len));
+
                     // Throw away data until we get to starting point
                     while (start-- > 0)
                     {
                         reader.Read();
                     }
-                    while (len-- > 0)
+                    while (expectedStrLen > 0)
                     {
                         var next = reader.ReadLine();
                         if (!string.IsNullOrEmpty(next))
                         {
-                            sb.Append(buffer);
-                            sb.Append('\n');
+                            expectedStrLen -= next.Length;
+                            sb.AppendLine(next);
                         }
                     }
           
                 }
 
-                // Add count to end of print string for sniffing
-                counter++;
-                sb.AppendFormat(string.Format("\n\t\t\t<<{0}>>", counter));
-                if (sb.Length % 2 != 0)
-                {
-                    sb.Append(' ');
-                }
-                foreach (char c in sb.ToString().ToCharArray())
-                {
-                    bytes.Add((byte)c);
-                }
+                var str = sb.ToString();
+                doPrintSend(Encoding.ASCII.GetBytes(str));
+                sb.Clear();
 
-                doPrintSend(bytes.ToArray());
-                bytes.Clear();
 
                 // Cut, Present, Eject
                 Cut_Click(this, null);
@@ -318,8 +313,9 @@ namespace ESCPOSTester
                 Present_Click(this, null);
 
                 // Give time to fully present
-                Thread.Sleep(3000);
+                //Thread.Sleep(3000);
 
+                // Reject every 5th
                 if (rejectAt++ == 5)
                 {
                     Reject_Click(this, null);
@@ -365,7 +361,13 @@ namespace ESCPOSTester
             // Process open file dialog box results 
             if (result == true)
             {
-                RawPrinterHelper.SendFileToPrinter(CurrentPrinter, dlg.FileName);
+                if (File.Exists(dlg.FileName))
+                {
+                    // Extract the ASCII formatted hex ESC/POS data... or any data really as long 
+                    // as the text is space delimited base 16 bytes
+                    var bytes = File.ReadAllBytes(dlg.FileName);
+                    doPrintSend(bytes);
+                }
             }
         }
 
@@ -519,13 +521,13 @@ namespace ESCPOSTester
         }
 
         #region Numeric Inputbox Tests
-        private void txtTicketCount_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        private void txtShouldBeNumber_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
             // Test for numeric content
             e.Handled = !IsNumericText(e.Text);
         }
 
-        private void txtTicketCount_Pasting(object sender, DataObjectPastingEventArgs e)
+        private void txtShouldBeNumber_Pasting(object sender, DataObjectPastingEventArgs e)
         {
             if (e.DataObject.GetDataPresent(typeof(String)))
             {
@@ -541,5 +543,6 @@ namespace ESCPOSTester
             }
         }
         #endregion
+
     }
 }
