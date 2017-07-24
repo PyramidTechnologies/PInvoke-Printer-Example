@@ -72,16 +72,16 @@
             <Button x:Name="RandomBtn" Content="Start Random" Grid.Column="1" HorizontalAlignment="Center"             
                 VerticalAlignment="Bottom" Width="74" Click="Random_Click" Margin="0,10,0,0" 
                     ToolTip="Send Sherlock Holmes text to target"/>
-            
+            <Label Content="Count" HorizontalAlignment="Center"/>
             <TextBox x:Name="txtTicketCount" HorizontalAlignment="Center" Height="23"
                  PreviewTextInput="txtShouldBeNumber_PreviewTextInput" DataObject.Pasting="txtShouldBeNumber_Pasting"
                  TextWrapping="Wrap" Text="3" VerticalAlignment="Top"  Margin="0,10,0,0" 
-                     Width="30" ToolTip="Ticket Count"/>
-            
+                     Width="80" ToolTip="Ticket Count"/>
+            <Label Content="Delay Between" HorizontalAlignment="Center"/>
             <TextBox x:Name="txtTimeBetweenMs" Height="23"
                      PreviewTextInput="txtShouldBeNumber_PreviewTextInput"  Margin="0,10,0,0" 
                      DataObject.Pasting="txtShouldBeNumber_Pasting"
-                     TextWrapping="Wrap" Text="4000" VerticalAlignment="Bottom" Width="60" 
+                     TextWrapping="Wrap" Text="4000" VerticalAlignment="Bottom" Width="80" 
                      ToolTip="Time Between ms"/>
         </StackPanel>
         

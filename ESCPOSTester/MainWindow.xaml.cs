@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing.Printing;
 using System.IO;
+using System.Printing;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -251,6 +252,7 @@ namespace ESCPOSTester
         private void randomTask(int runCount, int between)
         {
             Random rnd = new Random((int)DateTime.Now.Ticks);
+            LocalPrintServer server = new LocalPrintServer();
 
             const int lineCount = 128457;
             int timeBetween = between == -1 ? 7000 : between;
@@ -312,9 +314,6 @@ namespace ESCPOSTester
 
                 Present_Click(this, null);
 
-                // Give time to fully present
-                //Thread.Sleep(3000);
-
                 // Reject every 5th
                 if (rejectAt++ == 5)
                 {
@@ -325,6 +324,17 @@ namespace ESCPOSTester
                 {
                     Eject_Click(this, null);
                 }
+
+                // Wait for print queue to empty
+                PrintQueue q;
+                while(true)
+                {
+                    // PrintQueue collection is not updated so requery every loop
+                    q = server.GetPrintQueue(CurrentPrinter);          
+                    if(q != null && q.NumberOfJobs == 0) break;                    
+                    Thread.Sleep(100);
+                }
+
 
                 Thread.Sleep(timeBetween);
 
