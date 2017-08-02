@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -28,6 +29,38 @@ namespace ESCPOSTester
             public IntPtr pDatatype;
             public IntPtr pDevMode;
             public int DesiredAccess;
+        }
+
+        /// <summary>      
+        /// See [http://msdn.microsoft.com/en-us/library/windows/desktop/dd162498(v=vs.85).aspx][15]      
+        /// See [http://www.pinvoke.net/default.aspx/user32.drawtext]
+        ///  </summary>      
+        [Flags]
+        public enum TextFormatFlags : uint
+        {
+            Default = 0x00000000,
+            Center = 0x00000001,
+            Right = 0x00000002,
+            VCenter = 0x00000004,
+            Bottom = 0x00000008,
+            WordBreak = 0x00000010,
+            SingleLine = 0x00000020,
+            ExpandTabs = 0x00000040,
+            TabStop = 0x00000080,
+            NoClip = 0x00000100,
+            ExternalLeading = 0x00000200,
+            CalcRect = 0x00000400,
+            NoPrefix = 0x00000800,
+            Internal = 0x00001000,
+            EditControl = 0x00002000,
+            PathEllipsis = 0x00004000,
+            EndEllipsis = 0x00008000,
+            ModifyString = 0x00010000,
+            RtlReading = 0x00020000,
+            WordEllipsis = 0x00040000,
+            NoFullWidthCharBreak = 0x00080000,
+            HidePrefix = 0x00100000,
+            ProfixOnly = 0x00200000,
         }
 
         /// <summary>
@@ -101,6 +134,60 @@ namespace ESCPOSTester
         /// <returns></returns>
         [DllImport("winspool.drv", EntryPoint = "ReadPrinter", SetLastError = true, ExactSpelling = true, CallingConvention = CallingConvention.StdCall)]
         static extern bool ReadPrinter(IntPtr hPrinter, [MarshalAs(UnmanagedType.LPStr)] StringBuilder pBuf, int cbBuf, out int pNoBytesRead);
+
+        [DllImport("gdi32.dll")]
+        public static extern int SetBkMode(IntPtr hdc, int mode);
+
+        [DllImport("gdi32.dll")]
+        public static extern int SelectObject(IntPtr hdc, IntPtr hgdiObj);
+
+        [DllImport("gdi32.dll")]
+        public static extern int SetTextColor(IntPtr hdc, int color);
+
+        [DllImport("gdi32.dll", EntryPoint = "GetTextExtentPoint32W")]
+        public static extern int GetTextExtentPoint32(IntPtr hdc, [MarshalAs(UnmanagedType.LPWStr)] string str, int len, ref Size size);
+
+        [DllImport("gdi32.dll", EntryPoint = "GetTextExtentExPointW")]
+        public static extern bool GetTextExtentExPoint(IntPtr hDc, [MarshalAs(UnmanagedType.LPWStr)]string str, int nLength, int nMaxExtent, int[] lpnFit, int[] alpDx, ref Size size);
+
+        [DllImport("gdi32.dll", EntryPoint = "TextOutW")]
+        public static extern bool TextOut(IntPtr hdc, int x, int y, [MarshalAs(UnmanagedType.LPWStr)] string str, int len);
+
+        [DllImport("user32.dll", EntryPoint = "DrawTextW")]
+        public static extern int DrawText(IntPtr hdc, [MarshalAs(UnmanagedType.LPWStr)] string str, int len, ref Rect rect, uint uFormat);
+
+        [DllImport("gdi32.dll")]
+        public static extern int SelectClipRgn(IntPtr hdc, IntPtr hrgn);
+
+        [DllImport("gdi32.dll")]
+        public static extern bool DeleteObject(IntPtr hObject);
+
+        /// <summary>
+        /// Internal rectanle helper
+        /// </summary>
+        internal struct Rect
+        {
+            private int _left;
+            private int _top;
+            private int _right;
+            private int _bottom;
+
+            public Rect(Rectangle r)
+            {
+                _left = r.Left;
+                _top = r.Top;
+                _bottom = r.Bottom;
+                _right = r.Right;
+            }
+
+            public Rect(RectangleF r)
+            {
+                _left = (int)Math.Floor(r.Left);
+                _top = (int)Math.Floor(r.Top);
+                _bottom = (int)Math.Floor(r.Bottom);
+                _right = (int)Math.Floor(r.Right);
+            }
+        }
 
         /// <summary>
         /// Send unmanaged data to the target printer.

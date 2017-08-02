@@ -1,11 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
 using System.Printing;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -26,19 +26,17 @@ namespace ESCPOSTester
         /// This string must match the installed printer name.
         /// Protip: Printers can be easily renamed from the MSC control printmanagement.msc
         /// </summary>
-        private const String PRINTER_NAME = "Reliance Printer";
-        private const String DEFAULT_TEXT = "My name is {0}";
+        private const String PRINTER_NAME = "Reliance";
 
         #region Fields
         private string _currentPrinter = "";
-        private string _currentString = DEFAULT_TEXT;
         private string _currentHex = "";
 
         /// <summary>
         /// ESC @ command - Initialize Printer
         /// resets all settings to default. Effectively a soft-reset
         /// </summary>
-        private static byte[] ESC_InitPrinter = new byte[]{ 0x1B, 0x40 };
+        private static byte[] ESC_InitPrinter = new byte[] { 0x1B, 0x40 };
 
         /// <summary>
         /// GS e - Ejector
@@ -66,6 +64,16 @@ namespace ESCPOSTester
 
         #endregion
 
+        #region ctor
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            DataContext = this;
+
+            CurrentHex = "0x1B 0x40";
+        }
+        #endregion
 
         #region Properties
         /// <summary>
@@ -76,27 +84,8 @@ namespace ESCPOSTester
             get { return _currentPrinter; }
             set
             {
-                // Inject the printer name if we can
-                if (CurrentString.Contains("{0}"))
-                {
-                    CurrentString = String.Format(_currentString, value);
-                }
-
                 _currentPrinter = value;
                 NotifyPropertyChanged("CurrentPrinter");
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the current string that will be printed
-        /// </summary>
-        public string CurrentString
-        {
-            get { return _currentString; }
-            set
-            {
-                _currentString = value;
-                NotifyPropertyChanged("CurrentString");
             }
         }
 
@@ -114,23 +103,197 @@ namespace ESCPOSTester
         }
         #endregion
 
-        #region ctor
-        public MainWindow()
-        {            
-            InitializeComponent();
+        /// <summary>
+        /// Runs the specified action on the UI thread. Please be sure 
+        /// to mark your delegates as async before passing them to this function.
+        /// </summary>
+        /// <param name="action"></param>
+        private void DoOnUIThread(Action action)
+        {
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(action);
+            }
+            else
+            {
+                action.Invoke();
+            }
+        }
 
-            DataContext = this;
 
-            CurrentHex = "0x1B 0x40";
+        /// <summary>
+        /// Common print hanlder for printing raw data bytes
+        /// </summary>
+        /// <param name="data"></param>
+        private void doPrintSend(byte[] data)
+        {
+            // Gotta get a pointer on the local heap. Fun fact, the naming suggests that
+            // this would be on the stack but it isn't. Windows no longer has a global heap
+            // per se so these naming conventions are legacy cruft.
+            IntPtr ptr = Marshal.AllocHGlobal(data.Length);
+            Marshal.Copy(data, 0, ptr, data.Length);
+
+
+            RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, ptr, data.Length);
+
+
+            Marshal.FreeHGlobal(ptr);
+
+            Thread.Sleep(100);
+        }
+
+        #region Random
+        /// <summary>
+        /// Sync controls to safely manage the background random task
+        /// </summary>
+        private readonly object m_lock = new Object();
+        bool isRandomRunning = false;
+
+        /// <summary>
+        /// Used for testing a printer by sending random data to it forever or for x number of tickets
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Random_Click(object sender, RoutedEventArgs e)
+        {
+            // Negative number will loop forever
+            var stopAt = (int)txtTicketCount.Value;
+
+            var between = (int)txtTimeBetweenMs.Value;
+
+            lock (m_lock)
+            {
+
+                if (!isRandomRunning)
+                {
+
+                    isRandomRunning = true;
+                    RandomBtn.Content = "Stop Random";
+
+                    // Run task and if we return, stop the test
+                    Task.Factory.StartNew(() =>
+                    {
+                        randomTask(stopAt, between);
+                        isRandomRunning = false;
+                        DoOnUIThread(() => RandomBtn.Content = "Start Random");
+                    });
+
+                }
+                else
+                {
+                    // Stop the randomTask process
+                    isRandomRunning = false;
+                    RandomBtn.Content = "Start Random";
+                }
+            }
+        }
+
+        /// <summary>
+        /// Performs random prints of random lengths with random time between tickets.
+        /// </summary>
+        /// <param name="runCount">Number of tickets to printer. Negative value will printer tickets forever.</param>
+        /// <param name="between">time is ms between prints</param>
+        private void randomTask(int runCount, int between)
+        {
+            Random rnd = new Random((int)DateTime.Now.Ticks);
+            LocalPrintServer server = new LocalPrintServer();
+
+            const int lineCount = 128457;
+            int timeBetween = between == -1 ? 7000 : between;
+
+
+            const int minLineCount = 20;
+            const int maxLineCount = 45;
+
+            int rejectAt = 0;
+            int counter = 0;
+
+            StringBuilder sb = new StringBuilder();
+            while (runCount != 0)
+            {
+                // Do not decrement negative numbers
+                if (runCount > 0)
+                {
+                    runCount--;
+                    DoOnUIThread(() => txtTicketCount.Value = runCount);
+                }
+
+                // Pick random starting line, random line count (file is 128457 lines
+                var start = rnd.Next(0, lineCount - maxLineCount);
+                var len = rnd.Next(minLineCount, maxLineCount);
+
+                // ~32 chars per line
+                var expectedStrLen = 32 * len;
+
+                using (var reader = new StringReader(Properties.Resources.text))
+                {
+
+                    // Add count to end of print string for sniffing      
+                    sb.AppendFormat(string.Format("\n\t\t\t<<Ticker #{0}, Len: {1}>>\n", counter++, len));
+
+                    // Throw away data until we get to starting point
+                    while (start-- > 0)
+                    {
+                        reader.Read();
+                    }
+                    while (expectedStrLen > 0)
+                    {
+                        var next = reader.ReadLine();
+                        if (!string.IsNullOrEmpty(next))
+                        {
+                            expectedStrLen -= next.Length;
+                            sb.AppendLine(next);
+                        }
+                    }
+
+                }
+
+                var str = sb.ToString();
+                doPrintSend(Encoding.ASCII.GetBytes(str));
+                sb.Clear();
+
+
+                // Cut, Present, Eject
+                Cut_Click(this, null);
+
+                Present_Click(this, null);
+
+                // Reject every 5th
+                if (rejectAt++ == 5)
+                {
+                    Reject_Click(this, null);
+                    rejectAt = 0;
+                }
+                else
+                {
+                    Eject_Click(this, null);
+                }
+
+                // Wait for print queue to empty
+                PrintQueue q;
+                while (true)
+                {
+                    // PrintQueue collection is not updated so requery every loop
+                    q = server.GetPrintQueue(CurrentPrinter);
+                    if (q != null && q.NumberOfJobs == 0) break;
+                    Thread.Sleep(100);
+                }
+
+
+                Thread.Sleep(timeBetween);
+
+                lock (m_lock)
+                {
+                    if (!isRandomRunning)
+                    {
+                        break;
+                    }
+                }
+            }
         }
         #endregion
 
-        #region Listeners
-        private void printString_Click(object sender, RoutedEventArgs e)
-        {
-            RawPrinterHelper.SendStringToPrinter(CurrentPrinter, CurrentString);
-        }
-
+        #region Raw Bytes
         /// <summary>
         /// Parse the 
         /// </summary>
@@ -159,7 +322,7 @@ namespace ESCPOSTester
 
         /// <summary>
         /// Initializes printer and sends present command
-       /// </summary>
+        /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Present_Click(object sender, RoutedEventArgs e)
@@ -196,158 +359,9 @@ namespace ESCPOSTester
         {
             RawPrinterHelper.RebootPrinter(CurrentPrinter);
         }
+        #endregion
 
-        /// <summary>
-        /// Sync controls to safely manage the background random task
-        /// </summary>
-        private readonly object m_lock = new Object();
-        bool isRandomRunning = false;
-
-
-        /// <summary>
-        /// Used for testing a printer by sending random data to it forever or for x number of tickets
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Random_Click(object sender, RoutedEventArgs e)
-        {
-            // Negative number will loop forever
-            var stopAt = -1;
-            Int32.TryParse(txtTicketCount.Text, out stopAt);
-
-            var between = -1;
-            Int32.TryParse(txtTimeBetweenMs.Text, out between);
-
-
-            lock(m_lock) {
-
-                if (!isRandomRunning)
-                {
-
-                    isRandomRunning = true;
-                    RandomBtn.Content = "Stop Random";
-
-                    // Run task and if we return, stop the test
-                    Task.Factory.StartNew(() =>{
-                        randomTask(stopAt, between);
-                        isRandomRunning = false;
-                        DoOnUIThread(() => RandomBtn.Content = "Start Random");
-                    });
-
-                }
-                else
-                {
-                    // Stop the randomTask process
-                    isRandomRunning = false;
-                    RandomBtn.Content = "Start Random";
-                }
-            }
-        }
-
-        /// <summary>
-        /// Performs random prints of random lengths with random time between tickets.
-        /// </summary>
-        /// <param name="runCount">Number of tickets to printer. Negative value will printer tickets forever.</param>
-        /// <param name="between">time is ms between prints</param>
-        private void randomTask(int runCount, int between)
-        {
-            Random rnd = new Random((int)DateTime.Now.Ticks);
-            LocalPrintServer server = new LocalPrintServer();
-
-            const int lineCount = 128457;
-            int timeBetween = between == -1 ? 7000 : between;
-
-
-            const int minLineCount = 20;
-            const int maxLineCount = 45;
-
-            int rejectAt = 0;
-            int counter = 0;
-   
-            StringBuilder sb = new StringBuilder();
-            while (runCount != 0)
-            {
-                // Do not decrement negative numbers
-                if (runCount > 0)
-                {
-                    runCount--;
-                    DoOnUIThread(()=>txtTicketCount.Text = string.Format("{0}", runCount));
-                }
-
-                // Pick random starting line, random line count (file is 128457 lines
-                var start = rnd.Next(0, lineCount - maxLineCount);
-                var len = rnd.Next(minLineCount, maxLineCount);
-
-                // ~32 chars per line
-                var expectedStrLen = 32 * len;
-
-                using (var reader = new StringReader(Properties.Resources.text))
-                {
-
-                    // Add count to end of print string for sniffing      
-                    sb.AppendFormat(string.Format("\n\t\t\t<<Ticker #{0}, Len: {1}>>\n", counter++, len));
-
-                    // Throw away data until we get to starting point
-                    while (start-- > 0)
-                    {
-                        reader.Read();
-                    }
-                    while (expectedStrLen > 0)
-                    {
-                        var next = reader.ReadLine();
-                        if (!string.IsNullOrEmpty(next))
-                        {
-                            expectedStrLen -= next.Length;
-                            sb.AppendLine(next);
-                        }
-                    }
-          
-                }
-
-                var str = sb.ToString();
-                doPrintSend(Encoding.ASCII.GetBytes(str));
-                sb.Clear();
-
-
-                // Cut, Present, Eject
-                Cut_Click(this, null);
-
-                Present_Click(this, null);
-
-                // Reject every 5th
-                if (rejectAt++ == 5)
-                {
-                    Reject_Click(this, null);
-                    rejectAt = 0;
-                }
-                else
-                {
-                    Eject_Click(this, null);
-                }
-
-                // Wait for print queue to empty
-                PrintQueue q;
-                while(true)
-                {
-                    // PrintQueue collection is not updated so requery every loop
-                    q = server.GetPrintQueue(CurrentPrinter);          
-                    if(q != null && q.NumberOfJobs == 0) break;                    
-                    Thread.Sleep(100);
-                }
-
-
-                Thread.Sleep(timeBetween);
-
-                lock (m_lock)
-                {
-                    if (!isRandomRunning)
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-
+        #region File Print
         /// <summary>
         /// Opens a file dialog and allows for the selection of a single file to send to the printer
         /// as a print job.
@@ -398,7 +412,7 @@ namespace ESCPOSTester
                 // Extract the ASCII formatted hex ESC/POS data... or any data really as long 
                 // as the text is space delimited base 16 bytes
                 var bytes = File.ReadAllBytes(file);
-                doPrintSend(bytes);             
+                doPrintSend(bytes);
             }
         }
 
@@ -420,45 +434,51 @@ namespace ESCPOSTester
                 doPrintSend(File.ReadAllBytes(file));
             }
         }
+        #endregion
 
-        /// <summary>
-        /// Common print hanlder for printing raw data bytes
-        /// </summary>
-        /// <param name="data"></param>
-        private void doPrintSend(byte[] data)
+        #region Win32 GDI
+        private void btnTextDrawCenter_Click(object sender, RoutedEventArgs e)
         {
-            // Gotta get a pointer on the local heap. Fun fact, the naming suggests that
-            // this would be on the stack but it isn't. Windows no longer has a global heap
-            // per se so these naming conventions are legacy cruft.
-            IntPtr ptr = Marshal.AllocHGlobal(data.Length);
-            Marshal.Copy(data, 0, ptr, data.Length);
-
-
-            RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, ptr, data.Length);
-
-
-            Marshal.FreeHGlobal(ptr);
-
-            Thread.Sleep(100);
-        }
-
-        /// <summary>
-        /// Runs the specified action on the UI thread. Please be sure 
-        /// to mark your delegates as async before passing them to this function.
-        /// </summary>
-        /// <param name="action"></param>
-        private void DoOnUIThread(Action action)
-        {
-            if (!Dispatcher.CheckAccess())
+            var doc = new PrintDocument()
             {
-                Dispatcher.Invoke(action);
-            }
-            else
-            {
-                action.Invoke();
-            }
-        }
+                PrintController = new StandardPrintController(),
+            };
+            doc.OriginAtMargins = false;
+            doc.PrinterSettings.PrinterName = CurrentPrinter;
+            doc.PrintPage += (s, args) =>
+                {
+                    var bounds = args.Graphics.VisibleClipBounds;
+                    bounds.Width *= args.Graphics.DpiX / 96.0f;
+                    var largeFont = new System.Drawing.Font("Consolas", 72.0f);
+                    System.Drawing.Size strSz;
 
+                    using (var renderer = new NativeTextRenderer(args.Graphics))
+                    {
+                        var str = "█<-1\"->█";
+                        renderer.DrawString(str,
+                            largeFont,
+                            Color.Black,
+                            bounds,
+                            RawPrinterHelper.TextFormatFlags.Center);
+                        strSz = renderer.MeasureString(str, largeFont);
+                        bounds.Y += strSz.Height;
+                    }
+
+                    using (var renderer = new NativeTextRenderer(args.Graphics))
+                    {
+                        var str = string.Format("bounds: {0}\nStrSize: {0}", bounds.ToString(), strSz.ToString());
+                        renderer.DrawString(str,
+                            new System.Drawing.Font("Consolas", 12.0f),
+                            Color.Black,
+                            bounds,
+                            0);
+                    }
+                };
+            doc.Print();
+        }
+        #endregion
+
+        #region Window Events
         /// <summary>
         /// Shows the proper mouse animation on drag-over
         /// </summary>
@@ -487,15 +507,22 @@ namespace ESCPOSTester
                 availablePrinters.Items.Add(printerName);
             }
 
-            if(string.IsNullOrEmpty(Properties.Settings.Default.LAST_PRINTER)) {
+            if (string.IsNullOrEmpty(Properties.Settings.Default.LAST_PRINTER))
+            {
                 Properties.Settings.Default.LAST_PRINTER = CurrentPrinter;
             }
-            
-            if(availablePrinters.Items.Contains(Properties.Settings.Default.LAST_PRINTER))
+
+            if (availablePrinters.Items.Contains(Properties.Settings.Default.LAST_PRINTER))
             {
                 CurrentPrinter = Properties.Settings.Default.LAST_PRINTER;
                 availablePrinters.SelectedItem = CurrentPrinter;
             }
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            Properties.Settings.Default.LAST_PRINTER = CurrentPrinter;
+            Properties.Settings.Default.Save();
         }
         #endregion
 
@@ -512,47 +539,6 @@ namespace ESCPOSTester
         }
 
         #endregion
-
-        /// <summary>
-        /// Returns true if the string is a valid number
-        /// </summary>
-        /// <param name="text">input string</param>
-        /// <returns>bool</returns>
-        private static bool IsNumericText(string text)
-        {
-            Regex regex = new Regex("[^0-9.-]+"); //regex that matches disallowed text
-            return !regex.IsMatch(text);
-        }
-
-        private void Window_Closing(object sender, CancelEventArgs e)
-        {
-            Properties.Settings.Default.LAST_PRINTER = CurrentPrinter;
-            Properties.Settings.Default.Save();
-        }
-
-        #region Numeric Inputbox Tests
-        private void txtShouldBeNumber_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
-        {
-            // Test for numeric content
-            e.Handled = !IsNumericText(e.Text);
-        }
-
-        private void txtShouldBeNumber_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            if (e.DataObject.GetDataPresent(typeof(String)))
-            {
-                String text = (String)e.DataObject.GetData(typeof(String));
-                if (!IsNumericText(text))
-                {
-                    e.CancelCommand();
-                }
-            }
-            else
-            {
-                e.CancelCommand();
-            }
-        }
-        #endregion
-
+    
     }
 }
