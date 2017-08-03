@@ -80,6 +80,8 @@ namespace ESCPOSTester
 
         public string PrinterName { get; private set; }
 
+        public string TestName { get; set; }
+
         public RandomPrinterMode Mode { get; set; }
 
         public int StopAt { get; set; }
@@ -194,10 +196,13 @@ namespace ESCPOSTester
 
             // Add count to end of print string for sniffing      
             sb.AppendFormat(string.Format("\n<<Ticker #{0} {1}>>\n", ++TickerCount, PrinterName));
+            sb.AppendFormat(string.Format("<<{0}>>\n", TestName));
 
             switch (Mode)
             {
                 case RandomPrinterMode.Empty:
+                    // Empty should not include ANY text at all
+                    sb.Clear();
                     for (var i = 0; i < MaxLineCount; i++)
                     {
                         sb.AppendLine();

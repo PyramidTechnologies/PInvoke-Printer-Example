@@ -14,7 +14,7 @@
             </Style>
         </DockPanel.Resources>
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top" >
-            <TextBox Text="Nickname (Edit Me)" FontSize="32" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+            <TextBox x:Name="txtNickname" Text="Nickname" FontSize="24" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" MouseDown="txtNickname_MouseDown" GotFocus="txtNickname_GotFocus"/>
             <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" >
                 <Label Content="{x:Static p:Resources.TARGET_PRINTER}" Margin="10,0,10,0"
                        HorizontalAlignment="Center" 

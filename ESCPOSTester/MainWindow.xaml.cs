@@ -198,6 +198,7 @@ namespace ESCPOSTester
                 MaxLineCount = (int)MaxLines.Value,
                 RejectAt = (int)RejectAt.Value,
                 TickerCount = CurrentPrintCount,
+                TestName = txtNickname.Text,
             };
 
             _mRandomPrinter.OnCutRequested += (s, o) => Cut_Click(this, null);
@@ -427,6 +428,16 @@ namespace ESCPOSTester
             {
                 _mRandomPrinter.TickerCount = CurrentPrintCount;
             }
+        }
+
+        private void txtNickname_GotFocus(object sender, RoutedEventArgs e)
+        {
+            txtNickname.SelectAll();
+        }
+
+        private void txtNickname_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            txtNickname.SelectAll();
         }
 
         private void btnRefreshPrinters_Click(object sender, RoutedEventArgs e)
