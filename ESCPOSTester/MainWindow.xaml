@@ -2,15 +2,19 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Loaded="Window_Loaded"
         xmlns:p="clr-namespace:ESCPOSTester.Properties"
-        Height="500" Width="500" Title="PTI Printer Test Utility - 1.0.0" Closing="Window_Closing">
+        Height="700" Width="500" Title="PTI Printer Test Utility - 1.0.0" Closing="Window_Closing">
     <Window.Resources>
         <ResourceDictionary Source="theme.xaml"/>
     </Window.Resources>
 
     <DockPanel Background="{StaticResource ThatchBackground}">
-        
+        <DockPanel.Resources>
+            <Style TargetType="StackPanel">
+                <Setter Property="Margin" Value="0,5,5,5"/>
+            </Style>
+        </DockPanel.Resources>
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top" >
-            <TextBox Text="Instance Nickname" FontSize="32" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+            <TextBox Text="Nickname (Edit Me)" FontSize="32" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
             <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" >
                 <Label Content="{x:Static p:Resources.TARGET_PRINTER}" Margin="10,0,10,0"
                        HorizontalAlignment="Center" 
