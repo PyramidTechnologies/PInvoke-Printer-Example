@@ -32,7 +32,9 @@ namespace ESCPOSTester
         private string _currentPrinter = "";
         private string _currentHex = "";
         private int _mCurrentPrintJobCount;
+        private int _mCurrentPrintCount;
         private RandomPrinter _mRandomPrinter;
+        private readonly object _mLock = new object();
 
         /// <summary>
         /// ESC @ command - Initialize Printer
@@ -113,6 +115,16 @@ namespace ESCPOSTester
                 NotifyPropertyChanged("CurrentPrintJobCount");
             }
         }
+
+        public int CurrentPrintCount
+        {
+            get { return _mCurrentPrintCount; }
+            set
+            {
+                _mCurrentPrintCount = value;
+                NotifyPropertyChanged("CurrentPrintCount");
+            }
+        }
         #endregion
 
         /// <summary>
@@ -167,47 +179,59 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private async void Random_Click(object sender, RoutedEventArgs e)
         {
-
-            // Not currently running
-            if (_mRandomPrinter == null)
+            lock (_mLock)
             {
-                var mode = (RandomPrinterMode)Enum.Parse(typeof(RandomPrinterMode), RandomMode.Text);
-                _mRandomPrinter = new RandomPrinter(CurrentPrinter)
+                if (_mRandomPrinter != null)
                 {
-                    Mode = mode,
-                    StopAt = (int)TicketCount.Value,  // Negative number will loop forever
-                    DelayMS = (int)TimeBetweenMs.Value,
-                    MinLineCount = (int)MinLines.Value,
-                    MaxLineCount = (int)MaxLines.Value,
-                    RejectAt = (int)RejectAt.Value,
-                };
-
-                _mRandomPrinter.OnCutRequested += (s, o) => Cut_Click(this, null);
-                _mRandomPrinter.OnEjectRequested += (s, o) => Eject_Click(this, null);
-                _mRandomPrinter.OnPresentRequested += (s, o) => Present_Click(this, null);
-                _mRandomPrinter.OnRejectRequested += (s, o) => Reject_Click(this, null);
-                _mRandomPrinter.OnDataEvent += (s, o) =>
-                {
-                    switch (o.EventType)
-                    {
-                        case EventType.JobCountUpdate:
-                            DoOnUIThread(() => CurrentPrintJobCount = o.Value);
-                            break;
-                        case EventType.RunCountUpdate:
-                            DoOnUIThread(() => TicketCount.Value = o.Value);
-                            break;
-                    }
-                };
-                RandomBtn.Content = "Stop Random";
-                await _mRandomPrinter.Start();
+                    StopRandom();
+                    return;
+                }
             }
 
+            var mode = (RandomPrinterMode)Enum.Parse(typeof(RandomPrinterMode), RandomMode.Text);
+            _mRandomPrinter = new RandomPrinter(CurrentPrinter)
+            {
+                Mode = mode,
+                StopAt = (int)TicketCount.Value,  // Negative number will loop forever
+                DelayMS = (int)TimeBetweenMs.Value,
+                MinLineCount = (int)MinLines.Value,
+                MaxLineCount = (int)MaxLines.Value,
+                RejectAt = (int)RejectAt.Value,
+                TickerCount = CurrentPrintCount,
+            };
 
-            RandomBtn.Content = "Start Random";
-            _mRandomPrinter.Stop();
-            _mRandomPrinter = null;
-
+            _mRandomPrinter.OnCutRequested += (s, o) => Cut_Click(this, null);
+            _mRandomPrinter.OnEjectRequested += (s, o) => Eject_Click(this, null);
+            _mRandomPrinter.OnPresentRequested += (s, o) => Present_Click(this, null);
+            _mRandomPrinter.OnRejectRequested += (s, o) => Reject_Click(this, null);
+            _mRandomPrinter.OnDataEvent += (s, o) =>
+            {
+                switch (o.EventType)
+                {
+                    case EventType.JobCountUpdate:
+                        DoOnUIThread(() => CurrentPrintJobCount = o.Value);
+                        break;
+                    case EventType.RunCountUpdate:
+                        DoOnUIThread(() => ++CurrentPrintCount);
+                        break;
+                }
+            };
+            RandomBtn.Content = "Stop Random";
+            CurrentPrintCount = await _mRandomPrinter.Start();
+            StopRandom();
         }
+
+        private void StopRandom()
+        {
+            RandomBtn.Content = "Start Random";
+            if (_mRandomPrinter != null)
+            {
+                CurrentPrintCount = _mRandomPrinter.TickerCount;
+                _mRandomPrinter.Stop();
+            }
+            _mRandomPrinter = null;
+        }
+    
         #endregion
 
         #region Raw Bytes
@@ -396,6 +420,15 @@ namespace ESCPOSTester
         #endregion
 
         #region Window Events
+        private void btnClickTicker_Click(object sender, RoutedEventArgs e)
+        {
+            CurrentPrintCount = 0;
+            if (_mRandomPrinter != null)
+            {
+                _mRandomPrinter.TickerCount = CurrentPrintCount;
+            }
+        }
+
         private void btnRefreshPrinters_Click(object sender, RoutedEventArgs e)
         {
             RefreshPrintersList();

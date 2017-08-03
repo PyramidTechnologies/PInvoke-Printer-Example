@@ -52,6 +52,7 @@ namespace ESCPOSTester
             MinLineCount = 25;
             MaxLineCount = 25;
             RejectAt = 5;
+            TickerCount = 0;
         }
 
         public event EventHandler<RandomPrinterEvent> OnDataEvent;
@@ -91,6 +92,8 @@ namespace ESCPOSTester
 
         public int RejectAt { get; set; }
 
+        public int TickerCount { get; set; }
+
         public async Task<int> Start()
         {
             _mIsRandomRunning = true;
@@ -115,7 +118,6 @@ namespace ESCPOSTester
 
             int rejectAt = 0;
             int runCount = StopAt;
-            int printCount = 0;
 
             while (runCount != 0)
             {
@@ -130,7 +132,7 @@ namespace ESCPOSTester
                     });
                 }
 
-                var str = GetPrintContent(ref printCount);
+                var str = GetPrintContent();
                 RawPrinterHelper.SendBytesToPrinter(PrinterName, Encoding.ASCII.GetBytes(str));
 
                 // Cut, Present, Eject
@@ -181,17 +183,17 @@ namespace ESCPOSTester
                 }
             }
 
-            return runCount;
+            return TickerCount;
         }
 
 
-        private string GetPrintContent(ref int printCount)
+        private string GetPrintContent()
         {
             Random rnd = new Random((int)DateTime.Now.Ticks);
             var sb = new StringBuilder();
 
             // Add count to end of print string for sniffing      
-            sb.AppendFormat(string.Format("\n\t\t\t<<Ticker #{0}>>\n", ++printCount));
+            sb.AppendFormat(string.Format("\n\t\t\t<<Ticker #{0}>>\n", ++TickerCount));
 
             switch (Mode)
             {
