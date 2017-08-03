@@ -68,7 +68,7 @@
                             <TextBlock Text="{Binding ElementName=TicketCount, Path=Value, StringFormat={}{0:0}}" VerticalAlignment="Center" FontSize="20"/>
                         </StackPanel>
                         <Slider x:Name="TicketCount"
-                                Minimum="-1" Maximum="1000" Value="3"
+                                Minimum="-1" Maximum="1000000" Value="3"
                                 TickPlacement="BottomRight"/>
                     </StackPanel>
                     <StackPanel>
