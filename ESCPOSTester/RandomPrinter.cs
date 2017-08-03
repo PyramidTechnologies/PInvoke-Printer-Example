@@ -193,7 +193,7 @@ namespace ESCPOSTester
             var sb = new StringBuilder();
 
             // Add count to end of print string for sniffing      
-            sb.AppendFormat(string.Format("\n\t\t\t<<Ticker #{0}>>\n", ++TickerCount));
+            sb.AppendFormat(string.Format("\n\t\t\t<<Ticker #{0} {1}>>\n", ++TickerCount, PrinterName));
 
             switch (Mode)
             {
