@@ -21,46 +21,73 @@
                           VerticalAlignment="Center"
                           Width="120" Margin="10,0,10,0"
                       SelectedItem="{Binding CurrentPrinter, Mode=TwoWay, IsAsync=True}" />
-                <Button Content="Refresh Printers" Margin="10,0,10,0"/>
+                <Button Content="Refresh Printers" Margin="10,0,10,0" Click="btnRefreshPrinters_Click"/>
             </StackPanel>
         </StackPanel>
 
         <TabControl Background="Transparent">
             
             <TabItem Header="Random">
-                <WrapPanel>
-                    <StackPanel>
-                        <Label Content="Mode"/>
-                        <ComboBox x:Name="RandomMode" SelectedIndex="0">
-                            <ComboBoxItem Content="Sherlock"/>
-                            <ComboBoxItem Content="S"/>
-                            <ComboBoxItem Content="Empty Ticket"/>
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Mode" Margin="0,0,10,0"/>
+                        <ComboBox x:Name="RandomMode" SelectedIndex="0" Width="150">
+                            <ComboBoxItem Name="Sherlock">Sherlock</ComboBoxItem>
+                            <ComboBoxItem Name="S">S</ComboBoxItem>
+                            <ComboBoxItem Name="EmptyTicket">Empty</ComboBoxItem>
                         </ComboBox>
-                        <Label Content="Min. Length (lines)"/>
-                        <Slider x:Name="MinLines" Minimum="20" Maximum="{Binding ElementName=MaxLines, Path=Value}" Value="40" TickPlacement="BottomRight"/>                        
-                        <Label Content="Max Length (lines)"/>
-                        <Slider x:Name="MaxLines" Minimum="{Binding ElementName=MinLines,Path=Value}" Maximum="1000" TickPlacement="BottomRight"/>
-                        <Label Content="Number to Print"/>
-                        <Slider x:Name="txtTicketCount"
-                                Minimum="1" Maximum="1000" Value="3"
+                    </StackPanel>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Min. Length (lines)"/>
+                            <TextBlock Text="{Binding ElementName=MinLines, Path=Value, StringFormat={}{0:0}}" VerticalAlignment="Center" FontSize="20"/>
+                        </StackPanel>
+                        <Slider x:Name="MinLines" Minimum="20" Maximum="{Binding ElementName=MaxLines, Path=Value}" Value="25" TickPlacement="BottomRight"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Max Length (lines)"/>
+                            <TextBlock Text="{Binding ElementName=MaxLines, Path=Value, StringFormat={}{0:0}}" VerticalAlignment="Center" FontSize="20"/>
+                        </StackPanel>
+                        <Slider x:Name="MaxLines" Minimum="{Binding ElementName=MinLines,Path=Value}" Maximum="1000" Value="45" TickPlacement="BottomRight"/>     
+                    </StackPanel>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Reject Every"/>
+                            <TextBlock Text="{Binding ElementName=RejectAt, Path=Value, StringFormat={}{0:0}}" VerticalAlignment="Center" FontSize="20"/>
+                        </StackPanel>
+                        <Slider x:Name="RejectAt" Minimum="0" Maximum="100" Value="5" TickPlacement="BottomRight"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Number to Print"/>
+                            <TextBlock Text="{Binding ElementName=TicketCount, Path=Value, StringFormat={}{0:0}}" VerticalAlignment="Center" FontSize="20"/>
+                        </StackPanel>
+                        <Slider x:Name="TicketCount"
+                                Minimum="-1" Maximum="1000" Value="3"
                                 TickPlacement="BottomRight"/>
-                        <Label Content="Delay Between"/>
-                        <Slider x:Name="txtTimeBetweenMs"
+                    </StackPanel>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Delay Between"/>
+                            <TextBlock Text="{Binding ElementName=TimeBetweenMs, Path=Value, StringFormat={}{0:0}}" VerticalAlignment="Center" FontSize="20"/>                            
+                        </StackPanel>
+                        <Slider x:Name="TimeBetweenMs"
                                 Minimum="1" Maximum="100000" Value="4000"
                                 TickPlacement="BottomRight"/>
-                        <TextBlock x:Name="JobSummary">
-                           <Label>Mode</Label><Label ContextMenu="{Binding ElementName=RandomMode, Path=Value, StringFormat={}}"/>                            
-                           <Label>Min. Length</Label><Label ContextMenu="{Binding ElementName=MinLines, Path=Value, StringFormat={}}"/>
-                           <Label>Max Length</Label><Label ContextMenu="{Binding ElementName=MaxLines, Path=Value, StringFormat={}}"/>
-                           <Label>Print Count</Label><Label ContextMenu="{Binding ElementName=MinLines, Path=Value, StringFormat={}}"/>
-                           <Label>Delay Between</Label><Label ContextMenu="{Binding ElementName=MinLines, Path=Value, StringFormat={}}"/>                            
-                        </TextBlock>
+                    </StackPanel>
+                    <StackPanel>
                         <Button x:Name="RandomBtn"
                                 Content="Start Random"                                
                                 VerticalAlignment="Bottom" Width="74" Click="Random_Click"
                                 Margin="10"/>                        
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Print Job Count"></Label>
+                        <Label Content="{Binding CurrentPrintJobCount}"/>
+                    </StackPanel>
                 </StackPanel>
-                </WrapPanel>
             </TabItem>
             
             <TabItem Header="Raw Bytes">

@@ -154,7 +154,7 @@ namespace ESCPOSTester
         public static extern bool TextOut(IntPtr hdc, int x, int y, [MarshalAs(UnmanagedType.LPWStr)] string str, int len);
 
         [DllImport("user32.dll", EntryPoint = "DrawTextW")]
-        public static extern int DrawText(IntPtr hdc, [MarshalAs(UnmanagedType.LPWStr)] string str, int len, ref Rect rect, uint uFormat);
+        internal static extern int DrawText(IntPtr hdc, [MarshalAs(UnmanagedType.LPWStr)] string str, int len, ref Rect rect, uint uFormat);
 
         [DllImport("gdi32.dll")]
         public static extern int SelectClipRgn(IntPtr hdc, IntPtr hrgn);
@@ -187,6 +187,30 @@ namespace ESCPOSTester
                 _bottom = (int)Math.Floor(r.Bottom);
                 _right = (int)Math.Floor(r.Right);
             }
+        }
+
+        /// <summary>
+        /// Send unmanaged data to the target printer.
+        /// When the function is given a printer name and an unmanaged array
+        /// of bytes, the function sends those bytes to the print queue.
+        /// Returns true on success, false on failure.
+        /// </summary>
+        /// <param name="szPrinterName">String name of printer</param>
+        /// <param name="data">Data to send</param>
+        /// <returns>bool</returns>
+        public static bool SendBytesToPrinter(string szPrinterName, byte[] data)
+        {
+            // Gotta get a pointer on the local heap. Fun fact, the naming suggests that
+            // this would be on the stack but it isn't. Windows no longer has a global heap
+            // per se so these naming conventions are legacy cruft.
+            IntPtr ptr = Marshal.AllocHGlobal(data.Length);
+            Marshal.Copy(data, 0, ptr, data.Length);
+
+
+            var result = RawPrinterHelper.SendBytesToPrinter(szPrinterName, ptr, data.Length);
+            Marshal.FreeHGlobal(ptr);
+
+            return result;
         }
 
         /// <summary>

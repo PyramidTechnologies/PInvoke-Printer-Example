@@ -31,6 +31,8 @@ namespace ESCPOSTester
         #region Fields
         private string _currentPrinter = "";
         private string _currentHex = "";
+        private int _mCurrentPrintJobCount;
+        private RandomPrinter _mRandomPrinter;
 
         /// <summary>
         /// ESC @ command - Initialize Printer
@@ -101,6 +103,16 @@ namespace ESCPOSTester
                 NotifyPropertyChanged("CurrentHex");
             }
         }
+
+        public int CurrentPrintJobCount
+        {
+            get { return _mCurrentPrintJobCount; }
+            set
+            {
+                _mCurrentPrintJobCount = value;
+                NotifyPropertyChanged("CurrentPrintJobCount");
+            }
+        }
         #endregion
 
         /// <summary>
@@ -120,176 +132,81 @@ namespace ESCPOSTester
             }
         }
 
-
-        /// <summary>
-        /// Common print hanlder for printing raw data bytes
-        /// </summary>
-        /// <param name="data"></param>
-        private void doPrintSend(byte[] data)
+        private void RefreshPrintersList()
         {
-            // Gotta get a pointer on the local heap. Fun fact, the naming suggests that
-            // this would be on the stack but it isn't. Windows no longer has a global heap
-            // per se so these naming conventions are legacy cruft.
-            IntPtr ptr = Marshal.AllocHGlobal(data.Length);
-            Marshal.Copy(data, 0, ptr, data.Length);
 
+            availablePrinters.Items.Clear();
 
-            RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, ptr, data.Length);
+            // The default printer can be pulled from printer settings since the default is always
+            // at the top of the list.
+            PrinterSettings settings = new PrinterSettings();
 
+            // Note, we do this in the loaded event because of the data binding.
+            CurrentPrinter = settings.PrinterName;
+            foreach (String printerName in PrinterSettings.InstalledPrinters)
+            {
+                availablePrinters.Items.Add(printerName);
+            }
 
-            Marshal.FreeHGlobal(ptr);
+            if (string.IsNullOrEmpty(Properties.Settings.Default.LAST_PRINTER))
+            {
+                Properties.Settings.Default.LAST_PRINTER = CurrentPrinter;
+            }
 
-            Thread.Sleep(100);
+            if (availablePrinters.Items.Contains(Properties.Settings.Default.LAST_PRINTER))
+            {
+                CurrentPrinter = Properties.Settings.Default.LAST_PRINTER;
+                availablePrinters.SelectedItem = CurrentPrinter;
+            }
         }
-
         #region Random
-        /// <summary>
-        /// Sync controls to safely manage the background random task
-        /// </summary>
-        private readonly object m_lock = new Object();
-        bool isRandomRunning = false;
-
         /// <summary>
         /// Used for testing a printer by sending random data to it forever or for x number of tickets
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Random_Click(object sender, RoutedEventArgs e)
+        private async void Random_Click(object sender, RoutedEventArgs e)
         {
-            // Negative number will loop forever
-            var stopAt = (int)txtTicketCount.Value;
 
-            var between = (int)txtTimeBetweenMs.Value;
-
-            lock (m_lock)
+            // Not currently running
+            if (_mRandomPrinter == null)
             {
-
-                if (!isRandomRunning)
+                var mode = (RandomPrinterMode)Enum.Parse(typeof(RandomPrinterMode), RandomMode.Text);
+                _mRandomPrinter = new RandomPrinter(CurrentPrinter)
                 {
+                    Mode = mode,
+                    StopAt = (int)TicketCount.Value,  // Negative number will loop forever
+                    DelayMS = (int)TimeBetweenMs.Value,
+                    MinLineCount = (int)MinLines.Value,
+                    MaxLineCount = (int)MaxLines.Value,
+                    RejectAt = (int)RejectAt.Value,
+                };
 
-                    isRandomRunning = true;
-                    RandomBtn.Content = "Stop Random";
-
-                    // Run task and if we return, stop the test
-                    Task.Factory.StartNew(() =>
+                _mRandomPrinter.OnCutRequested += (s, o) => Cut_Click(this, null);
+                _mRandomPrinter.OnEjectRequested += (s, o) => Eject_Click(this, null);
+                _mRandomPrinter.OnPresentRequested += (s, o) => Present_Click(this, null);
+                _mRandomPrinter.OnRejectRequested += (s, o) => Reject_Click(this, null);
+                _mRandomPrinter.OnDataEvent += (s, o) =>
+                {
+                    switch (o.EventType)
                     {
-                        randomTask(stopAt, between);
-                        isRandomRunning = false;
-                        DoOnUIThread(() => RandomBtn.Content = "Start Random");
-                    });
-
-                }
-                else
-                {
-                    // Stop the randomTask process
-                    isRandomRunning = false;
-                    RandomBtn.Content = "Start Random";
-                }
+                        case EventType.JobCountUpdate:
+                            DoOnUIThread(() => CurrentPrintJobCount = o.Value);
+                            break;
+                        case EventType.RunCountUpdate:
+                            DoOnUIThread(() => TicketCount.Value = o.Value);
+                            break;
+                    }
+                };
+                RandomBtn.Content = "Stop Random";
+                await _mRandomPrinter.Start();
             }
-        }
-
-        /// <summary>
-        /// Performs random prints of random lengths with random time between tickets.
-        /// </summary>
-        /// <param name="runCount">Number of tickets to printer. Negative value will printer tickets forever.</param>
-        /// <param name="between">time is ms between prints</param>
-        private void randomTask(int runCount, int between)
-        {
-            Random rnd = new Random((int)DateTime.Now.Ticks);
-            LocalPrintServer server = new LocalPrintServer();
-
-            const int lineCount = 128457;
-            int timeBetween = between == -1 ? 7000 : between;
 
 
-            const int minLineCount = 20;
-            const int maxLineCount = 45;
+            RandomBtn.Content = "Start Random";
+            _mRandomPrinter.Stop();
+            _mRandomPrinter = null;
 
-            int rejectAt = 0;
-            int counter = 0;
-
-            StringBuilder sb = new StringBuilder();
-            while (runCount != 0)
-            {
-                // Do not decrement negative numbers
-                if (runCount > 0)
-                {
-                    runCount--;
-                    DoOnUIThread(() => txtTicketCount.Value = runCount);
-                }
-
-                // Pick random starting line, random line count (file is 128457 lines
-                var start = rnd.Next(0, lineCount - maxLineCount);
-                var len = rnd.Next(minLineCount, maxLineCount);
-
-                // ~32 chars per line
-                var expectedStrLen = 32 * len;
-
-                using (var reader = new StringReader(Properties.Resources.text))
-                {
-
-                    // Add count to end of print string for sniffing      
-                    sb.AppendFormat(string.Format("\n\t\t\t<<Ticker #{0}, Len: {1}>>\n", counter++, len));
-
-                    // Throw away data until we get to starting point
-                    while (start-- > 0)
-                    {
-                        reader.Read();
-                    }
-                    while (expectedStrLen > 0)
-                    {
-                        var next = reader.ReadLine();
-                        if (!string.IsNullOrEmpty(next))
-                        {
-                            expectedStrLen -= next.Length;
-                            sb.AppendLine(next);
-                        }
-                    }
-
-                }
-
-                var str = sb.ToString();
-                doPrintSend(Encoding.ASCII.GetBytes(str));
-                sb.Clear();
-
-
-                // Cut, Present, Eject
-                Cut_Click(this, null);
-
-                Present_Click(this, null);
-
-                // Reject every 5th
-                if (rejectAt++ == 5)
-                {
-                    Reject_Click(this, null);
-                    rejectAt = 0;
-                }
-                else
-                {
-                    Eject_Click(this, null);
-                }
-
-                // Wait for print queue to empty
-                PrintQueue q;
-                while (true)
-                {
-                    // PrintQueue collection is not updated so requery every loop
-                    q = server.GetPrintQueue(CurrentPrinter);
-                    if (q != null && q.NumberOfJobs == 0) break;
-                    Thread.Sleep(100);
-                }
-
-
-                Thread.Sleep(timeBetween);
-
-                lock (m_lock)
-                {
-                    if (!isRandomRunning)
-                    {
-                        break;
-                    }
-                }
-            }
         }
         #endregion
 
@@ -304,7 +221,7 @@ namespace ESCPOSTester
             try
             {
                 var raw = Utilities.StringToByteArray(CurrentHex);
-                doPrintSend(raw);
+                RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, raw);
             }
             catch (Exception)
             { }
@@ -317,7 +234,7 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private void Cut_Click(object sender, RoutedEventArgs e)
         {
-            doPrintSend(ESC_CutPaper);
+            RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, ESC_CutPaper);
         }
 
         /// <summary>
@@ -327,7 +244,7 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private void Present_Click(object sender, RoutedEventArgs e)
         {
-            doPrintSend(ESC_Eject12Steps);
+            RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, ESC_Eject12Steps);
         }
         /// <summary>
         /// Initialized printer and send eject command
@@ -336,7 +253,7 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private void Eject_Click(object sender, RoutedEventArgs e)
         {
-            doPrintSend(ESC_Eject);
+            RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, ESC_Eject);
         }
 
         /// <summary>
@@ -346,7 +263,7 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private void Reject_Click(object sender, RoutedEventArgs e)
         {
-            doPrintSend(ESC_Retract);
+            RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, ESC_Retract);
         }
 
         /// <summary>
@@ -390,7 +307,7 @@ namespace ESCPOSTester
                     // Extract the ASCII formatted hex ESC/POS data... or any data really as long 
                     // as the text is space delimited base 16 bytes
                     var bytes = File.ReadAllBytes(dlg.FileName);
-                    doPrintSend(bytes);
+                    RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, bytes);
                 }
             }
         }
@@ -412,7 +329,7 @@ namespace ESCPOSTester
                 // Extract the ASCII formatted hex ESC/POS data... or any data really as long 
                 // as the text is space delimited base 16 bytes
                 var bytes = File.ReadAllBytes(file);
-                doPrintSend(bytes);
+                RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, bytes);
             }
         }
 
@@ -431,7 +348,7 @@ namespace ESCPOSTester
             if (File.Exists(file))
             {
                 // PRN is a raw binary dump - treat it as such
-                doPrintSend(File.ReadAllBytes(file));
+                RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, File.ReadAllBytes(file));
             }
         }
         #endregion
@@ -479,6 +396,11 @@ namespace ESCPOSTester
         #endregion
 
         #region Window Events
+        private void btnRefreshPrinters_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshPrintersList();
+        }   
+
         /// <summary>
         /// Shows the proper mouse animation on drag-over
         /// </summary>
@@ -496,27 +418,7 @@ namespace ESCPOSTester
         /// <param name="e"></param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // The default printer can be pulled from printer settings since the default is always
-            // at the top of the list.
-            PrinterSettings settings = new PrinterSettings();
-
-            // Note, we do this in the loaded event because of the data binding.
-            CurrentPrinter = settings.PrinterName;
-            foreach (String printerName in PrinterSettings.InstalledPrinters)
-            {
-                availablePrinters.Items.Add(printerName);
-            }
-
-            if (string.IsNullOrEmpty(Properties.Settings.Default.LAST_PRINTER))
-            {
-                Properties.Settings.Default.LAST_PRINTER = CurrentPrinter;
-            }
-
-            if (availablePrinters.Items.Contains(Properties.Settings.Default.LAST_PRINTER))
-            {
-                CurrentPrinter = Properties.Settings.Default.LAST_PRINTER;
-                availablePrinters.SelectedItem = CurrentPrinter;
-            }
+            RefreshPrintersList();
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -539,6 +441,5 @@ namespace ESCPOSTester
         }
 
         #endregion
-    
     }
 }
