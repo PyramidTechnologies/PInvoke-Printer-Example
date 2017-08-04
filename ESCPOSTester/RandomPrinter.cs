@@ -294,8 +294,8 @@ namespace ESCPOSTester
                     });
                 }
 
-                // Sooo slow anyways, skip the delay
-                //Thread.Sleep(timeBetween);
+
+                Thread.Sleep(timeBetween);
 
                 lock (_mLock)
                 {
@@ -392,11 +392,6 @@ namespace ESCPOSTester
                         }
 
                     }
-                    break;
-
-                case RandomPrinterMode.QR:
-                    // Print 3 QR codes - left, center and right justified
-                    // in random order. This uses the PTI QR command syntax.
                     break;
             }
 
