@@ -29,7 +29,7 @@
     <ProductName>ESCPOSTester</ProductName>
     <PublisherName>Pyramid Technologies</PublisherName>
     <MinimumRequiredVersion>1.1.0.0</MinimumRequiredVersion>
-    <ApplicationRevision>6</ApplicationRevision>
+    <ApplicationRevision>7</ApplicationRevision>
     <ApplicationVersion>1.3.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -147,6 +147,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\rickqr.bmp" />
     <Content Include="Resources\text.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

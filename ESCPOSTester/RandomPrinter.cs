@@ -1,5 +1,8 @@
-﻿using System;
+﻿using ESCPOSTester.Properties;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Printing;
@@ -13,7 +16,8 @@ namespace ESCPOSTester
     {
         Sherlock,
         S,
-        Empty
+        Empty,
+        QR,
     }
 
     public enum EventType
@@ -112,7 +116,11 @@ namespace ESCPOSTester
 
         private int RunPrintTask()
         {
-            LocalPrintServer server = new LocalPrintServer();
+            // QR mode is a little different
+            if (Mode == RandomPrinterMode.QR)
+            {
+                return RunQRTask();                
+            }
 
             int timeBetween = DelayMS < 0 ? 7000 : DelayMS;
             int minLineCount = MinLineCount;
@@ -152,27 +160,7 @@ namespace ESCPOSTester
                     RaiseSafeHandler(OnEjectRequested);
                 }
 
-                // Wait for print queue to empty
-                PrintQueue q;
-                int jobCount = 0;
-                while (true)
-                {
-                    // PrintQueue collection is not updated so requery every loop
-                    q = server.GetPrintQueue(PrinterName);
-                    if (jobCount != q.NumberOfJobs)
-                    {
-                        RaiseDataEvent(new RandomPrinterEvent()
-                        {
-                            EventType = EventType.JobCountUpdate,
-                            Value = q.NumberOfJobs,
-                        });
-                    }
-
-                    jobCount = q.NumberOfJobs;
-                    if (q != null && q.NumberOfJobs == 0) break;
-                    Thread.Sleep(100);
-                }
-
+                AwaitPrintQueueClear();
 
                 Thread.Sleep(timeBetween);
 
@@ -188,6 +176,163 @@ namespace ESCPOSTester
             return TickerCount;
         }
 
+        /// <summary>
+        /// Uses Windows print API to generate QR code print jobs
+        /// </summary>
+        /// <returns></returns>
+        private int RunQRTask()
+        {                                    
+            Random rnd = new Random((int)DateTime.Now.Ticks);
+
+            var font = new Font("Consolas", 18f);
+            var blackBrush = new SolidBrush(Color.Black); 
+
+            int timeBetween = DelayMS < 0 ? 7000 : DelayMS;
+            int runCount = StopAt;
+
+            var points = new List<Point>();
+            var bmp = Resources.rickqr;
+
+
+            // Y will get overwritten
+            var left = new Point(0, 0);
+            var center = new Point(95, 0);
+            var right = new Point(185, 0);
+
+            while (runCount != 0)
+            {
+                var doc = new PrintDocument()
+                {
+                    PrintController = new StandardPrintController(),
+                
+                };
+                doc.OriginAtMargins = false;
+                doc.PrinterSettings.PrinterName = PrinterName;
+                doc.PrintPage += (s, args) =>
+                {
+                    // Make sure we operate on correct width                 
+                    var bounds = args.Graphics.VisibleClipBounds;
+                    bounds.Width *= args.Graphics.DpiX / 96.0f;
+
+                    // Add title
+                    using (var renderer = new NativeTextRenderer(args.Graphics))
+                    {
+                        var str = string.Format("\n<<Ticker #{0} {1}>>\n", ++TickerCount, PrinterName);
+                        renderer.DrawString(str,
+                            font,
+                            Color.Black,
+                            bounds,
+                            RawPrinterHelper.TextFormatFlags.Center);
+                    }
+                    using (var renderer = new NativeTextRenderer(args.Graphics))
+                    {
+                        var str = string.Format("<<{0}>>\n", TestName);
+                        renderer.DrawString(str,
+                            font,
+                            Color.Black,
+                            bounds,
+                            RawPrinterHelper.TextFormatFlags.Center);
+                    }
+
+                    switch (rnd.Next(0, 6))
+                    {
+                        case 0:
+                            points.Add(left);
+                            points.Add(center);
+                            points.Add(right);
+                            break;
+                        case 1:
+                            points.Add(left);
+                            points.Add(right);
+                            points.Add(center);
+                            break;
+                        case 2:
+                            points.Add(center);
+                            points.Add(left);
+                            points.Add(right);
+                            break;
+                        case 3:
+                            points.Add(center);
+                            points.Add(right);
+                            points.Add(left);
+                            break;
+                        case 4:
+                            points.Add(right);
+                            points.Add(left);
+                            points.Add(center);
+                            break;
+                        case 5:
+                            points.Add(right);
+                            points.Add(center);
+                            points.Add(left);
+                            break;
+
+                    }
+
+                                                   
+                    var y = 30;
+                    foreach (var p in points)
+                    {
+                        args.Graphics.DrawImage(bmp, p.X, y, bmp.Width, bmp.Height);
+                        y += bmp.Height;
+                    }
+                    points.Clear();
+                    args.HasMorePages = false;
+                };
+                doc.Print();
+
+                AwaitPrintQueueClear();
+
+                // Do not decrement negative numbers
+                if (runCount > 0)
+                {
+                    runCount--;
+                    RaiseDataEvent(new RandomPrinterEvent()
+                    {
+                        EventType = EventType.RunCountUpdate,
+                        Value = runCount,
+                    });
+                }
+
+                // Sooo slow anyways, skip the delay
+                //Thread.Sleep(timeBetween);
+
+                lock (_mLock)
+                {
+                    if (!_mIsRandomRunning)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return TickerCount;
+        }
+
+        private void AwaitPrintQueueClear()
+        {
+            // Wait for print queue to empty
+            LocalPrintServer server = new LocalPrintServer();
+            PrintQueue q;
+            int jobCount = 0;
+            while (true)
+            {
+                // PrintQueue collection is not updated so requery every loop
+                q = server.GetPrintQueue(PrinterName);
+                if (jobCount != q.NumberOfJobs)
+                {
+                    RaiseDataEvent(new RandomPrinterEvent()
+                    {
+                        EventType = EventType.JobCountUpdate,
+                        Value = q.NumberOfJobs,
+                    });
+                }
+
+                jobCount = q.NumberOfJobs;
+                if (q != null && q.NumberOfJobs == 0) break;
+                Thread.Sleep(100);
+            }
+        }
 
         private string GetPrintContent()
         {
@@ -247,6 +392,11 @@ namespace ESCPOSTester
                         }
 
                     }
+                    break;
+
+                case RandomPrinterMode.QR:
+                    // Print 3 QR codes - left, center and right justified
+                    // in random order. This uses the PTI QR command syntax.
                     break;
             }
 

@@ -39,6 +39,7 @@
                             <ComboBoxItem Name="Sherlock">Sherlock</ComboBoxItem>
                             <ComboBoxItem Name="S">S</ComboBoxItem>
                             <ComboBoxItem Name="EmptyTicket">Empty</ComboBoxItem>
+                            <ComboBoxItem Name="QR">QR</ComboBoxItem>
                         </ComboBox>
                     </StackPanel>
                     <StackPanel>
