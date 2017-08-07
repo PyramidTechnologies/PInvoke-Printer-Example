@@ -329,7 +329,7 @@ namespace ESCPOSTester
                 }
 
                 jobCount = q.NumberOfJobs;
-                if (q != null && q.NumberOfJobs == 0) break;
+                if (q != null && q.NumberOfJobs == 0 || !_mIsRandomRunning) break;
                 Thread.Sleep(100);
             }
         }
