@@ -319,7 +319,7 @@ namespace ESCPOSTester
             {
                 // PrintQueue collection is not updated so requery every loop
                 q = server.GetPrintQueue(PrinterName);
-                if (jobCount != q.NumberOfJobs)
+                if (q != null && jobCount != q.NumberOfJobs)
                 {
                     RaiseDataEvent(new RandomPrinterEvent()
                     {
