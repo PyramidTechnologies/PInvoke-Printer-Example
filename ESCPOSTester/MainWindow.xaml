@@ -47,7 +47,7 @@
                             <Label Content="Min. Length (lines)"/>
                             <TextBlock Text="{Binding ElementName=MinLines, Path=Value, StringFormat={}{0:0}}" VerticalAlignment="Center" FontSize="20"/>
                         </StackPanel>
-                        <Slider x:Name="MinLines" Minimum="20" Maximum="{Binding ElementName=MaxLines, Path=Value}" Value="25" TickPlacement="BottomRight"/>
+                        <Slider x:Name="MinLines" Minimum="1" Maximum="{Binding ElementName=MaxLines, Path=Value}" Value="25" TickPlacement="BottomRight"/>
                     </StackPanel>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
