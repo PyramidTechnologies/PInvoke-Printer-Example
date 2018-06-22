@@ -40,6 +40,7 @@
                             <ComboBoxItem Name="S">S</ComboBoxItem>
                             <ComboBoxItem Name="EmptyTicket">Empty</ComboBoxItem>
                             <ComboBoxItem Name="QR">QR</ComboBoxItem>
+                            <ComboBoxItem Name="Image">Image</ComboBoxItem>
                         </ComboBox>
                     </StackPanel>
                     <StackPanel>

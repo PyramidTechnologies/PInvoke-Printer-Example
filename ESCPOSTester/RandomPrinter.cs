@@ -18,6 +18,7 @@ namespace ESCPOSTester
         S,
         Empty,
         QR,
+        Image,
     }
 
     public enum EventType
@@ -57,6 +58,7 @@ namespace ESCPOSTester
             MaxLineCount = 25;
             RejectAt = 5;
             TickerCount = 0;
+            ImageData = Resources.rickqr;
         }
 
         public event EventHandler<RandomPrinterEvent> OnDataEvent;
@@ -100,10 +102,12 @@ namespace ESCPOSTester
 
         public int TickerCount { get; set; }
 
+        public Bitmap ImageData { get; set; }
+
         public async Task<int> Start()
         {
             _mIsRandomRunning = true;
-            return await Task.Factory.StartNew<int>(() => RunPrintTask());
+            return await Task.Factory.StartNew<int>(RunPrintTask);
         }
 
         public void Stop()
@@ -117,9 +121,9 @@ namespace ESCPOSTester
         private int RunPrintTask()
         {
             // QR mode is a little different
-            if (Mode == RandomPrinterMode.QR)
+            if (Mode == RandomPrinterMode.QR || Mode == RandomPrinterMode.Image)
             {
-                return RunQRTask();                
+                return RunImageTask(ImageData);
             }
 
             int timeBetween = DelayMS < 0 ? 7000 : DelayMS;
@@ -177,12 +181,12 @@ namespace ESCPOSTester
         }
 
         /// <summary>
-        /// Uses Windows print API to generate QR code print jobs
+        /// Uses Windows print API to generate image print jobs
         /// </summary>
         /// <returns></returns>
-        private int RunQRTask()
+        private int RunImageTask(Bitmap bmp)
         {                                    
-            Random rnd = new Random((int)DateTime.Now.Ticks);
+            var rnd = new Random((int)DateTime.Now.Ticks);
 
             var font = new Font("Consolas", 18f);
             var blackBrush = new SolidBrush(Color.Black); 
@@ -191,8 +195,6 @@ namespace ESCPOSTester
             int runCount = StopAt;
 
             var points = new List<Point>();
-            var bmp = Resources.rickqr;
-
 
             // Y will get overwritten
             var left = new Point(0, 0);
@@ -201,13 +203,12 @@ namespace ESCPOSTester
 
             while (runCount != 0)
             {
-                var doc = new PrintDocument()
+                var doc = new PrintDocument
                 {
                     PrintController = new StandardPrintController(),
-                
+                    OriginAtMargins = false,
+                    PrinterSettings = {PrinterName = PrinterName},
                 };
-                doc.OriginAtMargins = false;
-                doc.PrinterSettings.PrinterName = PrinterName;
                 doc.PrintPage += (s, args) =>
                 {
                     // Make sure we operate on correct width                 
@@ -315,22 +316,34 @@ namespace ESCPOSTester
             LocalPrintServer server = new LocalPrintServer();
             PrintQueue q;
             int jobCount = 0;
-            while (true)
+            try
             {
-                // PrintQueue collection is not updated so requery every loop
-                q = server.GetPrintQueue(PrinterName);
-                if (q != null && jobCount != q.NumberOfJobs)
+                while (true)
                 {
-                    RaiseDataEvent(new RandomPrinterEvent()
+                    // PrintQueue collection is not updated so requery every loop
+                    q = server.GetPrintQueue(PrinterName);
+                    if (q != null && jobCount != q.NumberOfJobs)
                     {
-                        EventType = EventType.JobCountUpdate,
-                        Value = q.NumberOfJobs,
-                    });
-                }
+                        RaiseDataEvent(new RandomPrinterEvent()
+                        {
+                            EventType = EventType.JobCountUpdate,
+                            Value = q.NumberOfJobs,
+                        });
+                    }
 
-                jobCount = q.NumberOfJobs;
-                if (q != null && q.NumberOfJobs == 0 || !_mIsRandomRunning) break;
-                Thread.Sleep(100);
+                    jobCount = q.NumberOfJobs;
+                    if (q.NumberOfJobs == 0 || !_mIsRandomRunning)
+                    {
+                        break;
+                    }
+
+                    Thread.Sleep(100);
+                }
+            }
+            catch (Exception)
+            {
+                // PrintQueue exception may be thrown, just sleep and hope for the best
+                Thread.Sleep(1000);
             }
         }
 
@@ -352,7 +365,10 @@ namespace ESCPOSTester
                     {
                         sb.AppendLine();
                         // randomly exit once we reach minimum length
-                        if (i > MinLineCount && rnd.Next(100) % 13 == 0) break;
+                        if (i > MinLineCount && rnd.Next(100) % 13 == 0)
+                        {
+                            break;
+                        }
                     }
                     break;
 
@@ -361,7 +377,10 @@ namespace ESCPOSTester
                     {
                         sb.AppendLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
                         // randomly exit once we reach minimum length
-                        if (i > MinLineCount && rnd.Next(100) % 13 == 0) break;
+                        if (i > MinLineCount && rnd.Next(100) % 13 == 0)
+                        {
+                            break;
+                        }
                     }
                     break;
 

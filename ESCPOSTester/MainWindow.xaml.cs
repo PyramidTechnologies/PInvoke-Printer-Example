@@ -12,6 +12,8 @@ using System.Windows;
 
 namespace ESCPOSTester
 {
+    using Microsoft.Win32;
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
@@ -200,6 +202,33 @@ namespace ESCPOSTester
                 TickerCount = CurrentPrintCount,
                 TestName = txtNickname.Text,
             };
+
+
+            if (mode == RandomPrinterMode.Image)
+            {
+                var dlg = new Microsoft.Win32.OpenFileDialog
+                {
+                    Filter = "Image Files (*.bmp;*.jpg;*.jpeg,*.png)|*.BMP;*.JPG;*.JPEG;*.PNG"
+                };
+
+                var result = dlg.ShowDialog();
+                if (result == true)
+                {
+                    if (File.Exists(dlg.FileName))
+                    {
+                        try
+                        {
+                            _mRandomPrinter.ImageData = new Bitmap(dlg.FileName);
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Failed to read image", "Error", MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+                            return;
+                        }
+                    }
+                }
+            }
 
             _mRandomPrinter.OnCutRequested += (s, o) => Cut_Click(this, null);
             _mRandomPrinter.OnEjectRequested += (s, o) => Eject_Click(this, null);
