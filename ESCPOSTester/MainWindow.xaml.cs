@@ -219,6 +219,11 @@ namespace ESCPOSTester
                         try
                         {
                             _mRandomPrinter.ImageData = new Bitmap(dlg.FileName);
+                            if (mode == RandomPrinterMode.Image)
+                            {
+                                // do not randomize layout
+                                _mRandomPrinter.RandomImageLayout = false;
+                            }
                         }
                         catch
                         {

@@ -59,6 +59,7 @@ namespace ESCPOSTester
             RejectAt = 5;
             TickerCount = 0;
             ImageData = Resources.rickqr;
+            RandomImageLayout = true;
         }
 
         public event EventHandler<RandomPrinterEvent> OnDataEvent;
@@ -103,6 +104,8 @@ namespace ESCPOSTester
         public int TickerCount { get; set; }
 
         public Bitmap ImageData { get; set; }
+
+        public bool RandomImageLayout { get; set; }
 
         public async Task<int> Start()
         {
@@ -235,42 +238,50 @@ namespace ESCPOSTester
                             RawPrinterHelper.TextFormatFlags.Center);
                     }
 
-                    switch (rnd.Next(0, 6))
+                    if (RandomImageLayout)
                     {
-                        case 0:
-                            points.Add(left);
-                            points.Add(center);
-                            points.Add(right);
-                            break;
-                        case 1:
-                            points.Add(left);
-                            points.Add(right);
-                            points.Add(center);
-                            break;
-                        case 2:
-                            points.Add(center);
-                            points.Add(left);
-                            points.Add(right);
-                            break;
-                        case 3:
-                            points.Add(center);
-                            points.Add(right);
-                            points.Add(left);
-                            break;
-                        case 4:
-                            points.Add(right);
-                            points.Add(left);
-                            points.Add(center);
-                            break;
-                        case 5:
-                            points.Add(right);
-                            points.Add(center);
-                            points.Add(left);
-                            break;
+                        switch (rnd.Next(0, 6))
+                        {
+                            case 0:
+                                points.Add(left);
+                                points.Add(center);
+                                points.Add(right);
+                                break;
+                            case 1:
+                                points.Add(left);
+                                points.Add(right);
+                                points.Add(center);
+                                break;
+                            case 2:
+                                points.Add(center);
+                                points.Add(left);
+                                points.Add(right);
+                                break;
+                            case 3:
+                                points.Add(center);
+                                points.Add(right);
+                                points.Add(left);
+                                break;
+                            case 4:
+                                points.Add(right);
+                                points.Add(left);
+                                points.Add(center);
+                                break;
+                            case 5:
+                                points.Add(right);
+                                points.Add(center);
+                                points.Add(left);
+                                break;
 
+                        }
+                    }
+                    else
+                    {
+                        // Make sure most of image is within printed area since we're not handling page size
+                        points.Add(left);
                     }
 
-                                                   
+
                     var y = 30;
                     foreach (var p in points)
                     {
