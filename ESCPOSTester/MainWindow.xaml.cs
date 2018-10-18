@@ -3,17 +3,10 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
-using System.Printing;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace ESCPOSTester
 {
-    using Microsoft.Win32;
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// 
@@ -201,6 +194,7 @@ namespace ESCPOSTester
                 RejectAt = (int)RejectAt.Value,
                 TickerCount = CurrentPrintCount,
                 TestName = txtNickname.Text,
+                UnnaturalRejections = chkUnnatural.IsChecked.GetValueOrDefault()
             };
 
 
@@ -408,6 +402,22 @@ namespace ESCPOSTester
             {
                 // PRN is a raw binary dump - treat it as such
                 RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, File.ReadAllBytes(file));
+            }
+        }
+
+        private void UI_PrintImage(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            var file = files[0];
+
+            if (File.Exists(file))
+            {
+
+                var img = System.Drawing.Image.FromFile(file);
+                var converter = new ImageConverter();
+                var bytes = (byte[])converter.ConvertTo(img, typeof(byte[]));
+
+                RawPrinterHelper.SendBytesToPrinter(CurrentPrinter, bytes);
             }
         }
         #endregion

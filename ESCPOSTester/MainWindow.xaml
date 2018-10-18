@@ -35,13 +35,14 @@
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Mode" Margin="0,0,10,0"/>
-                        <ComboBox x:Name="RandomMode" SelectedIndex="0" Width="150">
+                        <ComboBox x:Name="RandomMode" SelectedIndex="1" Width="150">
                             <ComboBoxItem Name="Sherlock">Sherlock</ComboBoxItem>
                             <ComboBoxItem Name="S">S</ComboBoxItem>
                             <ComboBoxItem Name="EmptyTicket">Empty</ComboBoxItem>
                             <ComboBoxItem Name="QR">QR</ComboBoxItem>
                             <ComboBoxItem Name="Image">Image</ComboBoxItem>
                         </ComboBox>
+                        <CheckBox x:Name="chkUnnatural" Content="Use unnatural ticket ejection" VerticalAlignment="Center" Margin="5" ToolTip="Explicitly issue reject and eject commands"/>
                     </StackPanel>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
@@ -55,18 +56,18 @@
                             <Label Content="Max Length (lines)"/>
                             <TextBlock Text="{Binding ElementName=MaxLines, Path=Value, StringFormat={}{0:0}}" VerticalAlignment="Center" FontSize="20"/>
                         </StackPanel>
-                        <Slider x:Name="MaxLines" Minimum="{Binding ElementName=MinLines,Path=Value}" Maximum="1000" Value="45" TickPlacement="BottomRight"/>     
+                        <Slider x:Name="MaxLines" Minimum="{Binding ElementName=MinLines,Path=Value}" Maximum="1000" Value="25" TickPlacement="BottomRight"/>     
                     </StackPanel>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Reject Every"/>
                             <TextBlock Text="{Binding ElementName=RejectAt, Path=Value, StringFormat={}{0:0}}" VerticalAlignment="Center" FontSize="20"/>
                         </StackPanel>
-                        <Slider x:Name="RejectAt" Minimum="0" Maximum="100" Value="5" TickPlacement="BottomRight"/>
+                        <Slider x:Name="RejectAt" Minimum="0" Maximum="100" Value="5" ToolTip="Has no effect if unnatural ticket ejection is active" TickPlacement="BottomRight"/>
                     </StackPanel>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="Number to Print"/>
+                            <Label Content="Tickets to Print"/>
                             <TextBlock Text="{Binding ElementName=TicketCount, Path=Value, StringFormat={}{0:0}}" VerticalAlignment="Center" FontSize="20"/>
                         </StackPanel>
                         <Slider x:Name="TicketCount" SmallChange="1" LargeChange="100"
@@ -75,7 +76,7 @@
                     </StackPanel>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="Delay Between"/>
+                            <Label Content="Delay Between Prints (Seconds)"/>
                             <TextBlock Text="{Binding ElementName=TimeBetweenMs, Path=Value, StringFormat={}{0:0}}" VerticalAlignment="Center" FontSize="20"/>                            
                         </StackPanel>
                         <Slider x:Name="TimeBetweenMs" SmallChange="100" LargeChange="1000"
@@ -146,6 +147,15 @@
                        DragEnter="UI_DragEnter"/>
                             <Label Content="{x:Static p:Resources.DROP_BIN}" HorizontalAlignment="Center" 
                    VerticalAlignment="Center" AllowDrop="True" DragEnter="UI_DragEnter" Drop="UI_PrintBin"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel VerticalAlignment="Center" Margin="10">
+                        <Grid VerticalAlignment="Center">
+                            <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Center" Height="100" Stroke="Black" VerticalAlignment="Center"
+                                       Width="100" AllowDrop="True" ToolTip="Print Image" Drop="UI_PrintImage" DragEnter="UI_DragEnter"/>
+                            <Label Content="image" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   AllowDrop="True" DragEnter="UI_DragEnter" Drop="UI_PrintImage"/>
                         </Grid>
                     </StackPanel>
 

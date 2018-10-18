@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
-using System.Linq;
 using System.Printing;
 using System.Text;
 using System.Threading;
@@ -29,7 +28,9 @@ namespace ESCPOSTester
 
     public class RandomPrinterEvent : EventArgs
     {
-        public RandomPrinterEvent() { }
+        public RandomPrinterEvent()
+        {
+        }
 
         public EventType EventType { get; set; }
 
@@ -38,13 +39,15 @@ namespace ESCPOSTester
 
     class RandomPrinter
     {
-
         #region Fields
+
         /// <summary>
         /// Sync controls to safely manage the background random task
         /// </summary>
         private readonly object _mLock = new Object();
+
         bool _mIsRandomRunning = false;
+
         #endregion
 
         public RandomPrinter(string printerName)
@@ -107,6 +110,13 @@ namespace ESCPOSTester
 
         public bool RandomImageLayout { get; set; }
 
+        /// <summary>
+        /// If true, do explicitly set reject/eject commands.
+        /// If false, let configuration dictate how to move
+        /// on the next ticket.
+        /// </summary>
+        public bool UnnaturalRejections { get; set; }
+
         public async Task<int> Start()
         {
             _mIsRandomRunning = true;
@@ -130,8 +140,6 @@ namespace ESCPOSTester
             }
 
             int timeBetween = DelayMS < 0 ? 7000 : DelayMS;
-            int minLineCount = MinLineCount;
-            int maxLineCount = MaxLineCount;
 
             int rejectAt = 0;
             int runCount = StopAt;
@@ -148,23 +156,30 @@ namespace ESCPOSTester
                         Value = runCount,
                     });
                 }
-
+                
                 var str = GetPrintContent();
                 RawPrinterHelper.SendBytesToPrinter(PrinterName, Encoding.ASCII.GetBytes(str));
 
-                // Cut, Present, Eject
+                // Cut and Present
                 RaiseSafeHandler(OnCutRequested);
                 RaiseSafeHandler(OnPresentRequested);
 
-                // Reject every nth
-                if (RejectAt > 0 && rejectAt++ == RejectAt)
+                if (UnnaturalRejections)
                 {
-                    RaiseSafeHandler(OnRejectRequested);
-                    rejectAt = 0;
-                }
-                else
-                {
-                    RaiseSafeHandler(OnEjectRequested);
+                    // If we are using unnatural rejection, check if it is time to reject
+                    var yesReject = RejectAt > 0 && rejectAt++ == RejectAt;
+
+                    // If rejection is requested, do a reject
+                    if (yesReject)
+                    {
+                        RaiseSafeHandler(OnRejectRequested);
+                        rejectAt = 0;
+                    }
+                    else
+                    {
+                        // Otherwise, we just eject
+                        RaiseSafeHandler(OnEjectRequested);
+                    }
                 }
 
                 AwaitPrintQueueClear();
@@ -188,11 +203,11 @@ namespace ESCPOSTester
         /// </summary>
         /// <returns></returns>
         private int RunImageTask(Bitmap bmp)
-        {                                    
-            var rnd = new Random((int)DateTime.Now.Ticks);
+        {
+            var rnd = new Random((int) DateTime.Now.Ticks);
 
             var font = new Font("Consolas", 18f);
-            var blackBrush = new SolidBrush(Color.Black); 
+            var blackBrush = new SolidBrush(Color.Black);
 
             int timeBetween = DelayMS < 0 ? 7000 : DelayMS;
             int runCount = StopAt;
@@ -228,6 +243,7 @@ namespace ESCPOSTester
                             bounds,
                             RawPrinterHelper.TextFormatFlags.Center);
                     }
+
                     using (var renderer = new NativeTextRenderer(args.Graphics))
                     {
                         var str = string.Format("<<{0}>>\n", TestName);
@@ -272,7 +288,6 @@ namespace ESCPOSTester
                                 points.Add(center);
                                 points.Add(left);
                                 break;
-
                         }
                     }
                     else
@@ -288,6 +303,7 @@ namespace ESCPOSTester
                         args.Graphics.DrawImage(bmp, p.X, y, bmp.Width, bmp.Height);
                         y += bmp.Height;
                     }
+
                     points.Clear();
                     args.HasMorePages = false;
                 };
@@ -360,12 +376,16 @@ namespace ESCPOSTester
 
         private string GetPrintContent()
         {
-            Random rnd = new Random((int)DateTime.Now.Ticks);
+            const int charLineLimit = 31;
+            var rnd = new Random((int) DateTime.Now.Ticks);
             var sb = new StringBuilder();
 
             // Add count to end of print string for sniffing      
             sb.AppendFormat(string.Format("\n<<Ticker #{0} {1}>>\n", ++TickerCount, PrinterName));
             sb.AppendFormat(string.Format("<<{0}>>\n", TestName));
+            sb.AppendFormat(string.Format("<<{0}>>\n", Mode));
+
+            var totalLinesPrinted = 3;
 
             switch (Mode)
             {
@@ -381,18 +401,22 @@ namespace ESCPOSTester
                             break;
                         }
                     }
+
                     break;
 
                 case RandomPrinterMode.S:
                     for (var i = 0; i < MaxLineCount; i++)
                     {
-                        sb.AppendLine("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+                        sb.AppendLine(new string('S', charLineLimit));
                         // randomly exit once we reach minimum length
                         if (i > MinLineCount && rnd.Next(100) % 13 == 0)
                         {
                             break;
                         }
+
+                        ++totalLinesPrinted;
                     }
+
                     break;
 
                 case RandomPrinterMode.Sherlock:
@@ -411,19 +435,30 @@ namespace ESCPOSTester
                         {
                             reader.Read();
                         }
+
                         while (expectedStrLen > 0)
                         {
                             var next = reader.ReadLine();
-                            if (!string.IsNullOrEmpty(next))
+                            if (string.IsNullOrEmpty(next))
                             {
-                                expectedStrLen -= next.Length;
-                                sb.AppendLine(next);
+                                continue;
                             }
-                        }
 
+                            if (next.Length > charLineLimit)
+                            {
+                                next = next.Substring(0, charLineLimit);
+                            }
+
+                            expectedStrLen -= next.Length;
+                            sb.AppendLine(next);
+                            ++totalLinesPrinted;
+                        }
                     }
+
                     break;
             }
+
+            sb.AppendFormat(string.Format("<<{0} Lines>>\n", ++totalLinesPrinted));
 
             return sb.ToString();
         }
