@@ -1,0 +1,1525 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NumericUpDownLib</name>
+    </assembly>
+    <members>
+        <member name="T:NumericUpDownLib.Converters.FactorToDoubleConverter">
+            <summary>
+            Scales a double value by its scale factor (eg. 100.00) up (convert)
+            or down (convertback), or vice versa if factor is set to 0.01...
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.Converters.FactorToDoubleConverter.#ctor">
+            <summary>
+            Class constructor
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.Converters.FactorToDoubleConverter.Factor">
+            <summary>
+            Gets/sets the factor for multiplication and division
+            between source (viewmodel) and target (view).
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.Converters.FactorToDoubleConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts a <seealso cref="T:System.Windows.Visibility"/> value
+            into a <seealso cref="T:System.Boolean"/> value.
+            </summary>
+            <param name="value"></param>
+            <param name="targetType"></param>
+            <param name="parameter"></param>
+            <param name="culture"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.Converters.FactorToDoubleConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts a <seealso cref="T:System.Boolean"/> value
+            into a <seealso cref="T:System.Windows.Visibility"/> value.
+            </summary>
+            <param name="value"></param>
+            <param name="targetType"></param>
+            <param name="parameter"></param>
+            <param name="culture"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NumericUpDownLib.Converters.ByteToPlaceHolderStringConverter">
+            <summary>
+            Converts a byte number into a string that contains the number 'X' characters input.
+            The output of this converter can be used to measure UI Air space to ensure enough
+            space for input controls...
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.Converters.ByteToPlaceHolderStringConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            </summary>
+            <param name="value"></param>
+            <param name="targetType"></param>
+            <param name="parameter"></param>
+            <param name="culture"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.Converters.ByteToPlaceHolderStringConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            </summary>
+            <param name="value"></param>
+            <param name="targetType"></param>
+            <param name="parameter"></param>
+            <param name="culture"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NumericUpDownLib.FloatUpDown">
+            <summary>
+            Implements a <see cref="T:System.Single"/> based Numeric Up/Down control.
+            
+            Original Source:
+            http://msdn.microsoft.com/en-us/library/vstudio/ms771573%28v=vs.90%29.aspx
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.FloatUpDown.StepSizeProperty">
+            <summary>
+            Backing store to define the size of the increment or decrement
+            when using the up/down of the up/down numeric control.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.FloatUpDown.StepSize">
+            <summary>
+            Gets or sets the step size
+            (actual distance) of increment or decrement step.
+            This value should at leat be one or greater.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.FloatUpDown.#cctor">
+            <summary>
+            Static class constructor
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.FloatUpDown.#ctor">
+            <summary>
+            Initializes a new instance of the AbstractBaseUpDown Control.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.FloatUpDown.CanIncreaseCommand">
+            <summary>
+            Determines whether the increase command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.FloatUpDown.CanDecreaseCommand">
+            <summary>
+            Determines whether the decrease command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.FloatUpDown.OnIncrease">
+            <summary>
+            Increase the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.FloatUpDown.OnDecrease">
+            <summary>
+            Decrease the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.FloatUpDown.CoerceValue(System.Single)">
+            <summary>
+            Attempts to force the new value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            
+            http://drwpf.com/blog/category/value-coercion/
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.FloatUpDown.CoerceMinValue(System.Single)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.FloatUpDown.CoerceMaxValue(System.Single)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses maximum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.FloatUpDown.FormatText(System.String,System.Boolean)">
+            <summary>
+            Checks if the current string entered in the textbox is valid
+            and conforms to a known format
+            (<see cref="T:NumericUpDownLib.AbstractBaseUpDown`1"/> base method for more details).
+            </summary>
+            <param name="text"></param>
+            <param name="formatNumber"></param>
+        </member>
+        <member name="T:NumericUpDownLib.ULongUpDown">
+            <summary>
+            Implements an <see cref="T:System.UInt64"/> based Numeric Up/Down control.
+            
+            Original Source:
+            http://msdn.microsoft.com/en-us/library/vstudio/ms771573%28v=vs.90%29.aspx
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.ULongUpDown.StepSizeProperty">
+            <summary>
+            Backing store to define the size of the increment or decrement
+            when using the up/down of the up/down numeric control.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.ULongUpDown.StepSize">
+            <summary>
+            Gets or sets the step size
+            (actual distance) of increment or decrement step.
+            This value should at leat be one or greater.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.ULongUpDown.#cctor">
+            <summary>
+            Static class constructor
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.ULongUpDown.#ctor">
+            <summary>
+            Initializes a new instance of the AbstractBaseUpDown Control.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.ULongUpDown.CanIncreaseCommand">
+            <summary>
+            Determines whether the increase command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.ULongUpDown.CanDecreaseCommand">
+            <summary>
+            Determines whether the decrease command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.ULongUpDown.OnIncrease">
+            <summary>
+            Increase the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.ULongUpDown.OnDecrease">
+            <summary>
+            Decrease the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.ULongUpDown.CoerceValue(System.UInt64)">
+            <summary>
+            Attempts to force the new value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            
+            http://drwpf.com/blog/category/value-coercion/
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.ULongUpDown.CoerceMinValue(System.UInt64)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.ULongUpDown.CoerceMaxValue(System.UInt64)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses maximum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.ULongUpDown.FormatText(System.String,System.Boolean)">
+            <summary>
+            Checks if the current string entered in the textbox is valid
+            and conforms to a known format
+            (<see cref="T:NumericUpDownLib.AbstractBaseUpDown`1"/> base method for more details).
+            </summary>
+            <param name="text"></param>
+            <param name="formatNumber"></param>
+        </member>
+        <member name="T:NumericUpDownLib.UIntegerUpDown">
+            <summary>
+            Implements an <see cref="T:System.UInt32"/> based Numeric Up/Down control.
+            
+            Original Source:
+            http://msdn.microsoft.com/en-us/library/vstudio/ms771573%28v=vs.90%29.aspx
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.UIntegerUpDown.StepSizeProperty">
+            <summary>
+            Backing store to define the size of the increment or decrement
+            when using the up/down of the up/down numeric control.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.UIntegerUpDown.StepSize">
+            <summary>
+            Gets or sets the step size
+            (actual distance) of increment or decrement step.
+            This value should at leat be one or greater.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.UIntegerUpDown.#cctor">
+            <summary>
+            Static class constructor
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.UIntegerUpDown.#ctor">
+            <summary>
+            Initializes a new instance of the AbstractBaseUpDown Control.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.UIntegerUpDown.CanIncreaseCommand">
+            <summary>
+            Determines whether the increase command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.UIntegerUpDown.CanDecreaseCommand">
+            <summary>
+            Determines whether the decrease command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.UIntegerUpDown.OnIncrease">
+            <summary>
+            Increase the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.UIntegerUpDown.OnDecrease">
+            <summary>
+            Decrease the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.UIntegerUpDown.CoerceValue(System.UInt32)">
+            <summary>
+            Attempts to force the new value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            
+            http://drwpf.com/blog/category/value-coercion/
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.UIntegerUpDown.CoerceMinValue(System.UInt32)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.UIntegerUpDown.CoerceMaxValue(System.UInt32)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses maximum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.UIntegerUpDown.FormatText(System.String,System.Boolean)">
+            <summary>
+            Checks if the current string entered in the textbox is valid
+            and conforms to a known format
+            (<see cref="T:NumericUpDownLib.AbstractBaseUpDown`1"/> base method for more details).
+            </summary>
+            <param name="text"></param>
+            <param name="formatNumber"></param>
+        </member>
+        <member name="T:NumericUpDownLib.UShortUpDown">
+            <summary>
+            Implements a <see cref="T:System.UInt16"/> based Numeric Up/Down control.
+            
+            Original Source:
+            http://msdn.microsoft.com/en-us/library/vstudio/ms771573%28v=vs.90%29.aspx
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.UShortUpDown.StepSizeProperty">
+            <summary>
+            Backing store to define the size of the increment or decrement
+            when using the up/down of the up/down numeric control.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.UShortUpDown.StepSize">
+            <summary>
+            Gets or sets the step size
+            (actual distance) of increment or decrement step.
+            This value should at leat be one or greater.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.UShortUpDown.#cctor">
+            <summary>
+            Static class constructor
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.UShortUpDown.#ctor">
+            <summary>
+            Initializes a new instance of the AbstractBaseUpDown Control.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.UShortUpDown.CanIncreaseCommand">
+            <summary>
+            Determines whether the increase command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.UShortUpDown.CanDecreaseCommand">
+            <summary>
+            Determines whether the decrease command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.UShortUpDown.OnIncrease">
+            <summary>
+            Increase the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.UShortUpDown.OnDecrease">
+            <summary>
+            Decrease the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.UShortUpDown.CoerceValue(System.UInt16)">
+            <summary>
+            Attempts to force the new value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            
+            http://drwpf.com/blog/category/value-coercion/
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.UShortUpDown.CoerceMinValue(System.UInt16)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.UShortUpDown.CoerceMaxValue(System.UInt16)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses maximum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.UShortUpDown.FormatText(System.String,System.Boolean)">
+            <summary>
+            Checks if the current string entered in the textbox is valid
+            and conforms to a known format
+            (<see cref="T:NumericUpDownLib.AbstractBaseUpDown`1"/> base method for more details).
+            </summary>
+            <param name="text"></param>
+            <param name="formatNumber"></param>
+        </member>
+        <member name="T:NumericUpDownLib.ShortUpDown">
+            <summary>
+            Implements a <see cref="T:System.Int16"/> based Numeric Up/Down control.
+            
+            Original Source:
+            http://msdn.microsoft.com/en-us/library/vstudio/ms771573%28v=vs.90%29.aspx
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.ShortUpDown.StepSizeProperty">
+            <summary>
+            Backing store to define the size of the increment or decrement
+            when using the up/down of the up/down numeric control.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.ShortUpDown.StepSize">
+            <summary>
+            Gets or sets the step size
+            (actual distance) of increment or decrement step.
+            This value should at leat be one or greater.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.ShortUpDown.#cctor">
+            <summary>
+            Static class constructor
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.ShortUpDown.#ctor">
+            <summary>
+            Initializes a new instance of the AbstractBaseUpDown Control.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.ShortUpDown.CanIncreaseCommand">
+            <summary>
+            Determines whether the increase command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.ShortUpDown.CanDecreaseCommand">
+            <summary>
+            Determines whether the decrease command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.ShortUpDown.OnIncrease">
+            <summary>
+            Increase the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.ShortUpDown.OnDecrease">
+            <summary>
+            Decrease the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.ShortUpDown.CoerceValue(System.Int16)">
+            <summary>
+            Attempts to force the new value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            
+            http://drwpf.com/blog/category/value-coercion/
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.ShortUpDown.CoerceMinValue(System.Int16)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.ShortUpDown.CoerceMaxValue(System.Int16)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses maximum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.ShortUpDown.FormatText(System.String,System.Boolean)">
+            <summary>
+            Checks if the current string entered in the textbox is valid
+            and conforms to a known format
+            (<see cref="T:NumericUpDownLib.AbstractBaseUpDown`1"/> base method for more details).
+            </summary>
+            <param name="text"></param>
+            <param name="formatNumber"></param>
+        </member>
+        <member name="T:NumericUpDownLib.LongUpDown">
+            <summary>
+            Implements an <see cref="T:System.Int64"/> based Numeric Up/Down control.
+            
+            Original Source:
+            http://msdn.microsoft.com/en-us/library/vstudio/ms771573%28v=vs.90%29.aspx
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.LongUpDown.StepSizeProperty">
+            <summary>
+            Backing store to define the size of the increment or decrement
+            when using the up/down of the up/down numeric control.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.LongUpDown.StepSize">
+            <summary>
+            Gets or sets the step size
+            (actual distance) of increment or decrement step.
+            This value should at leat be one or greater.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.LongUpDown.#cctor">
+            <summary>
+            Static class constructor
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.LongUpDown.#ctor">
+            <summary>
+            Initializes a new instance of the AbstractBaseUpDown Control.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.LongUpDown.CanIncreaseCommand">
+            <summary>
+            Determines whether the increase command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.LongUpDown.CanDecreaseCommand">
+            <summary>
+            Determines whether the decrease command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.LongUpDown.OnIncrease">
+            <summary>
+            Increase the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.LongUpDown.OnDecrease">
+            <summary>
+            Decrease the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.LongUpDown.CoerceValue(System.Int64)">
+            <summary>
+            Attempts to force the new value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            
+            http://drwpf.com/blog/category/value-coercion/
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.LongUpDown.CoerceMinValue(System.Int64)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.LongUpDown.CoerceMaxValue(System.Int64)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses maximum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.LongUpDown.FormatText(System.String,System.Boolean)">
+            <summary>
+            Checks if the current string entered in the textbox is valid
+            and conforms to a known format
+            (<see cref="T:NumericUpDownLib.AbstractBaseUpDown`1"/> base method for more details).
+            </summary>
+            <param name="text"></param>
+            <param name="formatNumber"></param>
+        </member>
+        <member name="T:NumericUpDownLib.SByteUpDown">
+            <summary>
+            Implements a <see cref="T:System.SByte"/> based Numeric Up/Down control.
+            
+            Source: http://msdn.microsoft.com/en-us/library/vstudio/ms771573%28v=vs.90%29.aspx
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.SByteUpDown.StepSizeProperty">
+            <summary>
+            Backing store to define the size of the increment or decrement
+            when using the up/down of the up/down numeric control.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.SByteUpDown.StepSize">
+            <summary>
+            Gets or sets the step size
+            (actual distance) of increment or decrement step.
+            This value should at leat be one or greater.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.SByteUpDown.#cctor">
+            <summary>
+            Static class constructor
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.SByteUpDown.#ctor">
+            <summary>
+            Initializes a new instance of the AbstractBaseUpDown Control.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.SByteUpDown.CanIncreaseCommand">
+            <summary>
+            Determines whether the increase command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.SByteUpDown.CanDecreaseCommand">
+            <summary>
+            Determines whether the decrease command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.SByteUpDown.OnIncrease">
+            <summary>
+            Increase the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.SByteUpDown.OnDecrease">
+            <summary>
+            Decrease the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.SByteUpDown.CoerceValue(System.SByte)">
+            <summary>
+            Attempts to force the new value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            
+            http://drwpf.com/blog/category/value-coercion/
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.SByteUpDown.CoerceMinValue(System.SByte)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.SByteUpDown.CoerceMaxValue(System.SByte)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses maximum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.SByteUpDown.FormatText(System.String,System.Boolean)">
+            <summary>
+            Checks if the current string entered in the textbox is valid
+            and conforms to a known format
+            (<see cref="T:NumericUpDownLib.AbstractBaseUpDown`1"/> base method for more details).
+            </summary>
+            <param name="text"></param>
+            <param name="formatNumber"></param>
+        </member>
+        <member name="T:NumericUpDownLib.DoubleUpDown">
+            <summary>
+            Implements a <see cref="T:System.Double"/> based Numeric Up/Down control.
+            
+            Original Source:
+            http://msdn.microsoft.com/en-us/library/vstudio/ms771573%28v=vs.90%29.aspx
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.DoubleUpDown.StepSizeProperty">
+            <summary>
+            Backing store to define the size of the increment or decrement
+            when using the up/down of the up/down numeric control.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.DoubleUpDown.StepSize">
+            <summary>
+            Gets or sets the step size
+            (actual distance) of increment or decrement step.
+            This value should at leat be one or greater.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.DoubleUpDown.#cctor">
+            <summary>
+            Static class constructor
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.DoubleUpDown.#ctor">
+            <summary>
+            Initializes a new instance of the AbstractBaseUpDown Control.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.DoubleUpDown.CanIncreaseCommand">
+            <summary>
+            Determines whether the increase command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.DoubleUpDown.CanDecreaseCommand">
+            <summary>
+            Determines whether the decrease command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.DoubleUpDown.OnIncrease">
+            <summary>
+            Increase the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.DoubleUpDown.OnDecrease">
+            <summary>
+            Decrease the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.DoubleUpDown.CoerceValue(System.Double)">
+            <summary>
+            Attempts to force the new value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            
+            http://drwpf.com/blog/category/value-coercion/
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.DoubleUpDown.CoerceMinValue(System.Double)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.DoubleUpDown.CoerceMaxValue(System.Double)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses maximum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.DoubleUpDown.FormatText(System.String,System.Boolean)">
+            <summary>
+            Checks if the current string entered in the textbox is valid
+            and conforms to a known format
+            (<see cref="T:NumericUpDownLib.AbstractBaseUpDown`1"/> base method for more details).
+            </summary>
+            <param name="text"></param>
+            <param name="formatNumber"></param>
+        </member>
+        <member name="T:NumericUpDownLib.DecimalUpDown">
+            <summary>
+            Implements a Byte based Numeric Up/Down control.
+            
+            Original Source:
+            http://msdn.microsoft.com/en-us/library/vstudio/ms771573%28v=vs.90%29.aspx
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.DecimalUpDown.StepSizeProperty">
+            <summary>
+            Backing store to define the size of the increment or decrement
+            when using the up/down of the up/down numeric control.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.DecimalUpDown.StepSize">
+            <summary>
+            Gets or sets the step size
+            (actual distance) of increment or decrement step.
+            This value should at leat be one or greater.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.DecimalUpDown.#cctor">
+            <summary>
+            Static class constructor
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.DecimalUpDown.#ctor">
+            <summary>
+            Initializes a new instance of the AbstractBaseUpDown Control.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.DecimalUpDown.CanIncreaseCommand">
+            <summary>
+            Determines whether the increase command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.DecimalUpDown.CanDecreaseCommand">
+            <summary>
+            Determines whether the decrease command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.DecimalUpDown.OnIncrease">
+            <summary>
+            Increase the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.DecimalUpDown.OnDecrease">
+            <summary>
+            Decrease the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.DecimalUpDown.CoerceValue(System.Decimal)">
+            <summary>
+            Attempts to force the new value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            
+            http://drwpf.com/blog/category/value-coercion/
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.DecimalUpDown.CoerceMinValue(System.Decimal)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.DecimalUpDown.CoerceMaxValue(System.Decimal)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses maximum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.DecimalUpDown.FormatText(System.String,System.Boolean)">
+            <summary>
+            Checks if the current string entered in the textbox is valid
+            and conforms to a known format
+            (<see cref="T:NumericUpDownLib.AbstractBaseUpDown`1"/> base method for more details).
+            </summary>
+            <param name="text"></param>
+            <param name="formatNumber"></param>
+        </member>
+        <member name="T:NumericUpDownLib.ByteUpDown">
+            <summary>
+            Implements a Byte based Numeric Up/Down control.
+            
+            Original Source:
+            http://msdn.microsoft.com/en-us/library/vstudio/ms771573%28v=vs.90%29.aspx
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.ByteUpDown.StepSizeProperty">
+            <summary>
+            Backing store to define the size of the increment or decrement
+            when using the up/down of the up/down numeric control.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.ByteUpDown.StepSize">
+            <summary>
+            Gets or sets the step size
+            (actual distance) of increment or decrement step.
+            This value should at leat be one or greater.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.ByteUpDown.#cctor">
+            <summary>
+            Static class constructor
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.ByteUpDown.#ctor">
+            <summary>
+            Initializes a new instance of the AbstractBaseUpDown Control.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.ByteUpDown.CanIncreaseCommand">
+            <summary>
+            Determines whether the increase command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.ByteUpDown.CanDecreaseCommand">
+            <summary>
+            Determines whether the decrease command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.ByteUpDown.OnIncrease">
+            <summary>
+            Increase the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.ByteUpDown.OnDecrease">
+            <summary>
+            Decrease the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.ByteUpDown.CoerceValue(System.Byte)">
+            <summary>
+            Attempts to force the new value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            
+            http://drwpf.com/blog/category/value-coercion/
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.ByteUpDown.CoerceMinValue(System.Byte)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.ByteUpDown.CoerceMaxValue(System.Byte)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses maximum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.ByteUpDown.FormatText(System.String,System.Boolean)">
+            <summary>
+            Checks if the current string entered in the textbox is valid
+            and conforms to a known format
+            (<see cref="T:NumericUpDownLib.AbstractBaseUpDown`1"/> base method for more details).
+            </summary>
+            <param name="text"></param>
+            <param name="formatNumber"></param>
+        </member>
+        <member name="T:NumericUpDownLib.NumericUpDown">
+            <summary>
+            Implements an Integer based Numeric Up/Down control.
+            
+            Original Source:
+            http://msdn.microsoft.com/en-us/library/vstudio/ms771573%28v=vs.90%29.aspx
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.NumericUpDown.StepSizeProperty">
+            <summary>
+            Backing store to define the size of the increment or decrement
+            when using the up/down of the up/down numeric control.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.NumericUpDown.StepSize">
+            <summary>
+            Gets or sets the step size
+            (actual distance) of increment or decrement step.
+            This value should at leat be one or greater.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.NumericUpDown.#cctor">
+            <summary>
+            Static class constructor
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.NumericUpDown.#ctor">
+            <summary>
+            Initializes a new instance of the AbstractBaseUpDown Control.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.NumericUpDown.CanIncreaseCommand">
+            <summary>
+            Determines whether the increase command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.NumericUpDown.CanDecreaseCommand">
+            <summary>
+            Determines whether the decrease command is available or not.
+            </summary>
+            <returns>true if command is enabled, otherwise false</returns>
+        </member>
+        <member name="M:NumericUpDownLib.NumericUpDown.OnIncrease">
+            <summary>
+            Increase the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.NumericUpDown.OnDecrease">
+            <summary>
+            Decrease the displayed value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.NumericUpDown.CoerceValue(System.Int32)">
+            <summary>
+            Attempts to force the new value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            
+            http://drwpf.com/blog/category/value-coercion/
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.NumericUpDown.CoerceMinValue(System.Int32)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.NumericUpDown.CoerceMaxValue(System.Int32)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses maximum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="newValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.NumericUpDown.FormatText(System.String,System.Boolean)">
+            <summary>
+            Checks if the current string entered in the textbox is valid
+            and conforms to a known format
+            (<see cref="T:NumericUpDownLib.AbstractBaseUpDown`1"/> base method for more details).
+            </summary>
+            <param name="text"></param>
+            <param name="formatNumber"></param>
+        </member>
+        <member name="T:NumericUpDownLib.InputBaseUpDown">
+            <summary>
+            This class serve as target for styling the <see cref="T:NumericUpDownLib.AbstractBaseUpDown`1"/> class
+            since styling directly on <see cref="T:NumericUpDownLib.AbstractBaseUpDown`1"/> is not supported in XAML.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.InputBaseUpDown.IsReadOnlyProperty">
+            <summary>
+            Determines whether the textbox portion of the control is editable
+            (requires additional check of bounds) or not.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.InputBaseUpDown.NumberStyleProperty">
+            <summary>
+            Determines the allowed style of a number entered and displayed in the textbox.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.InputBaseUpDown.#ctor">
+            <summary>
+            Class constructor
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.InputBaseUpDown.IncreaseCommand">
+            <summary>
+            Expose the increase value command via <seealso cref="T:System.Windows.Input.RoutedCommand"/> property.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.InputBaseUpDown.DecreaseCommand">
+            <summary>
+            Expose the decrease value command via <seealso cref="T:System.Windows.Input.RoutedCommand"/> property.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.InputBaseUpDown.IsReadOnly">
+            <summary>
+            Determines whether the textbox portion of the control is editable
+            (requires additional check of bounds) or not.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.InputBaseUpDown.NumberStyle">
+            <summary>
+            Gets/sets the allowed style of a number entered and displayed in the textbox.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.InputBaseUpDown.OnMouseWheel(System.Windows.Input.MouseWheelEventArgs)">
+            <summary>
+            User can mouse over the control and spin the mousewheel up or down
+            to increment or decrement the value in the up/down control.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:NumericUpDownLib.InputBaseUpDown.OnIncrease">
+            <summary>
+            Increase the displayed integer value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.InputBaseUpDown.CanIncreaseCommand">
+            <summary>
+            Determines whether the increase command is available or not.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.InputBaseUpDown.OnDecrease">
+            <summary>
+            Decrease the displayed integer value
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.InputBaseUpDown.CanDecreaseCommand">
+            <summary>
+            Determines whether the decrease command is available or not.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.InputBaseUpDown.InitializeCommands">
+            <summary>
+            Initialize up down/button commands and key gestures for up/down cursor keys
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.InputBaseUpDown.OnIncreaseCommand(System.Object,System.Windows.Input.ExecutedRoutedEventArgs)">
+            <summary>
+            Execute the increase value command
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:NumericUpDownLib.InputBaseUpDown.OnDecreaseCommand(System.Object,System.Windows.Input.ExecutedRoutedEventArgs)">
+            <summary>
+            Execute the decrease value command
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:NumericUpDownLib.NumericRepeatButtonControl">
+            <summary>
+            Class implements a repeat button custom control that supports
+            custom <seealso cref="T:System.Windows.Media.Geometry"/> data for display as an error and
+            and <seealso cref="T:System.Windows.Input.ICommand"/> binding to relay a click command
+            to a hosting control or bound viewmodel.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.NumericRepeatButtonControl.RepeatButtonContent">
+            <summary>
+            Gets/sets an object that is bound to the
+            ContentControl of the RepeatButton.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.NumericRepeatButtonControl.RepeatButtonContentProperty">
+            <summary>
+            Using a DependencyProperty as the backing store for RepeatButtonContent.
+            This enables styling and usage of flexible binding.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.NumericRepeatButtonControl.ClickCommand">
+            <summary>
+            Gets/sets the command that is bound and
+            invocked when the repeat button is clicked.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.NumericRepeatButtonControl.ClickCommandProperty">
+            <summary>
+            Implments the backing store for a DependencyProperty of the ClickCommand.
+            </summary>
+        </member>
+        <member name="T:NumericUpDownLib.AbstractBaseUpDown`1">
+            <summary>
+            Implements an up/down abstract base control.
+            Source: http://msdn.microsoft.com/en-us/library/vstudio/ms771573%28v=vs.90%29.aspx
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1.Part_TextBoxName">
+            <summary>
+            Gets the required tamplate name of the textbox portion of this control.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1.PART_MeasuringElement">
+            <summary>
+            Gets the required tamplate name of the textbox portion of this control.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1._MinValue">
+            <summary>
+            Gets/sets the default applicable minimum value
+            
+            Set this value in the static constructor of an inheriting class if a different
+            default format string is more appropriate in the context of that inheriting class.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1._MaxValue">
+            <summary>
+            Gets/sets the default applicable maximum value
+            
+            Set this value in the static constructor of an inheriting class if a different
+            default format string is more appropriate in the context of that inheriting class.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1.ValueProperty">
+            <summary>
+            Dependency property backing store for the Value property.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1.MinValueProperty">
+            <summary>
+            Dependency property backing store for Minimum Value property.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1.MaxValueProperty">
+            <summary>
+            Dependency property backing store for Maximum Value property.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1.ValueChangedEvent">
+            <summary>
+            Identifies the ValueChanged routed event.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1.MinValueChangedEvent">
+            <summary>
+            Identifies the MinValueChanged routed event.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1.MaxValueChangedEvent">
+            <summary>
+            Identifies the MaxValueChanged routed event.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1.DisplayLengthProperty">
+            <summary>
+            Backing store for dependency property to define the number of characters
+            that should be displayed in the control without having to scroll inside
+            the textbox portion.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1.IsDisplayLengthFixedProperty">
+            <summary>
+            Backing store for dependency property to decide whether DisplayLength
+            definition leads to a fixed control size (textbox control will scroll
+            if user types longer string), or not (control will resize in dependence
+            of string length and available space).
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1.SelectAllTextOnFocusProperty">
+            <summary>
+            Backing store for dependency property to decide whether all text in textbox
+            should be selected upon focus or not.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1.FormatStringProperty">
+            <summary>
+            Backing store for dependency property for .Net FormatString that is
+            applied to the textbox text portion of the up down control.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1._PART_TextBox">
+            <summary>
+            Holds the REQUIRED textbox instance part for this control.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.AbstractBaseUpDown`1._PART_Measuring_Element">
+            <summary>
+            Measures the required space for a string of a certain length
+            with a standard control to ensure that enough digits are visible.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.#cctor">
+            <summary>
+            Static class constructor
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.#ctor">
+            <summary>
+            Initializes a new instance of the AbstractBaseUpDown Control.
+            </summary>
+        </member>
+        <member name="E:NumericUpDownLib.AbstractBaseUpDown`1.ValueChanged">
+            <summary>
+            Occurs when the Value property changes.
+            </summary>
+        </member>
+        <member name="E:NumericUpDownLib.AbstractBaseUpDown`1.MinValueChanged">
+            <summary>
+            Occurs when the MinValue property changes.
+            </summary>
+        </member>
+        <member name="E:NumericUpDownLib.AbstractBaseUpDown`1.MaxValueChanged">
+            <summary>
+            Occurs when the MaxValue property changes.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.AbstractBaseUpDown`1.Value">
+            <summary>
+            Gets or sets the value assigned to the control.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.AbstractBaseUpDown`1.MinValue">
+            <summary>
+            Get/set dependency property to define the minimum legal value.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.AbstractBaseUpDown`1.MaxValue">
+            <summary>
+            Get/set dependency property to define the maximum legal value.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.AbstractBaseUpDown`1.DisplayLength">
+            <summary>
+            Gets/sets the number of characters to display in the textbox portion of the
+            AbstractBaseUpDown control.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.AbstractBaseUpDown`1.IsDisplayLengthFixed">
+            <summary>
+            Gets/sets whether the textbox portion of the numeric up down control
+            can go grow and shrink with its input or whether it should stay with
+            a fixed width.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.AbstractBaseUpDown`1.FormatString">
+            <summary>
+            Gets/sets a .Net FormatString that is applied to the textbox text
+            portion of the up down control.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.AbstractBaseUpDown`1.SelectAllTextOnFocus">
+            <summary>
+            Gets/sets a dependency property to determine whether all text
+            in the textbox should be selected on textbox focus or not.
+            </summary>
+        </member>
+        <member name="P:NumericUpDownLib.AbstractBaseUpDown`1.UserInput">
+            <summary>
+            Determines whether last text input was from a user (key was down) or not.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.OnApplyTemplate">
+            <summary>
+            Is invoked whenever application code or internal processes call
+            System.Windows.FrameworkElement.ApplyTemplate.
+            </summary>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1._PART_TextBox_TextChanged(System.Object,System.Windows.Controls.TextChangedEventArgs)">
+            <summary>
+            Method executes when the text portion in the textbox is changed
+            The Value is corrected to a valid value if text was illegal or
+            value was outside of the specified bounds.
+            
+            https://stackoverflow.com/questions/841293/where-is-the-wpf-numeric-updown-control#2752538
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.textBox_TextPasted(System.Object,System.Windows.DataObjectPastingEventArgs)">
+            <summary>
+            Catches pasting
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.textBox_PreviewTextInput(System.Object,System.Windows.Input.TextCompositionEventArgs)">
+            <summary>
+            Catches Backspace, Delete, Enter
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.textBox_PreviewKeyDown(System.Object,System.Windows.Input.KeyEventArgs)">
+            <summary>
+            Catches pasting
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.FormatText(System.String,System.Boolean)">
+            <summary>
+            Checks if the current string entered in the textbox is:
+            1) A valid number (syntax)
+            2) within bounds (Min &lt;= number &lt;= Max )
+            
+            3) adjusts the string if it appears to be invalid and
+            
+            4) <paramref name="formatNumber"/> true:
+               Applies the FormatString property to format the text in a certain way
+            </summary>
+            <param name="text"></param>
+            <param name="formatNumber"></param>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.CoerceValue(`0)">
+            <summary>
+            Attempts to force the new value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="NewValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.CoerceMinValue(`0)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses minimum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="NewValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.CoerceMaxValue(`0)">
+            <summary>
+            Attempts to force the new Minimum value into the existing dependency property
+            and attempts backup plans (uses maximum or maximum values) if value appears
+            to be out of either range.
+            </summary>
+            <param name="NewValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.OnValueChanged(System.Windows.RoutedPropertyChangedEventArgs{`0})">
+            <summary>
+            Raises the ValueChanged event.
+            </summary>
+            <param name="args">Arguments associated with the ValueChanged event.</param>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.OnMinValueChanged(System.Windows.RoutedPropertyChangedEventArgs{`0})">
+            <summary>
+            Raises the MinValueChanged event.
+            </summary>
+            <param name="args">Arguments associated with the ValueChanged event.</param>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.OnMaxValueChanged(System.Windows.RoutedPropertyChangedEventArgs{`0})">
+            <summary>
+            Raises the MinValueChanged event.
+            </summary>
+            <param name="args">Arguments associated with the ValueChanged event.</param>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.BindMeasuringObject(System.Boolean)">
+            <summary>
+            Sets or unsets the binding between measuring and user textbox.
+            </summary>
+            <param name="SetBinding"></param>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.BindMeasuringObject(System.Windows.FrameworkElement,System.Windows.FrameworkElement,System.Boolean)">
+            <summary>
+            Sets or Unsets a binding between a
+            - MeasuringControl.ActualWidth and
+            - UserControl.MaxWidth
+            
+            Both controls can be any <see cref="T:System.Windows.FrameworkElement"/>.
+            </summary>
+            <param name="UserControl"></param>
+            <param name="MeasuringControl"></param>
+            <param name="SetBinding"></param>
+        </member>
+        <member name="M:NumericUpDownLib.AbstractBaseUpDown`1.OnIsDisplayLengthFixedChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Method is invoked when the value of the <see cref="P:NumericUpDownLib.AbstractBaseUpDown`1.IsDisplayLengthFixed"/>
+            dependency property is changed. This results in changing the behavior of
+            the textbox resizing which in turn is dependent on the binding between
+            the PART_TextBox.NaxWidth = PART_Measuring_TextBox.ActualWidh.
+            </summary>
+            <param name="d"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:NumericUpDownLib.Themes.ResourceKeys">
+            <summary>
+            Resource key management class to keep track of all resources
+            that can be re-styled in applications that make use of the implemented controls.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.Themes.ResourceKeys.ControlAccentColorKey">
+            <summary>
+            Accent Color Key - This Color key is used to accent elements in the UI
+            (e.g.: Color of Activated Normal Window Frame, ResizeGrip, Focus or MouseOver input elements)
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.Themes.ResourceKeys.ControlAccentBrushKey">
+            <summary>
+            Accent Brush Key - This Brush key is used to accent elements in the UI
+            (e.g.: Color of Activated Normal Window Frame, ResizeGrip, Focus or MouseOver input elements)
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.Themes.ResourceKeys.GlyphNormalForegroundKey">
+            <summary>
+            Resource key of the controls normal glyph brush key.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.Themes.ResourceKeys.GlyphMouseOverForegroundKey">
+            <summary>
+            Resource key of the controls normal glyph brush key.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.Themes.ResourceKeys.GlyphDisabledForegroundKey">
+            <summary>
+            Resource key of the controls disabled glyph brush key.
+            </summary>
+        </member>
+        <member name="F:NumericUpDownLib.Themes.ResourceKeys.GlyphPressedBackroundKey">
+            <summary>
+            Resource key of the controls disabled glyph brush key.
+            </summary>
+        </member>
+    </members>
+</doc>
