@@ -77,21 +77,38 @@
     <StartupObject>ESCPOSTester.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NumericUpDownLib, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dirkster.NumericUpDownLib.2.1.1\lib\net4\NumericUpDownLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SXN.Core, Version=4.1.311.2, Culture=neutral, PublicKeyToken=d330946dddc91495, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.4.1.0311.2\lib\net451\SXN.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core, Version=3.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Core.3.5.21022.801\lib\net20\System.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Printing" />
+    <Reference Include="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <HintPath>..\packages\System.Windows.Forms.4.0.0.0\lib\System.Windows.Forms.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="ThermalTalk, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ThermalTalk.2.1.1\lib\net451\ThermalTalk.dll</HintPath>
+    </Reference>
+    <Reference Include="ThermalTalk.Imaging, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ThermalTalk.Imaging.2.0.0\lib\net451\ThermalTalk.Imaging.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
