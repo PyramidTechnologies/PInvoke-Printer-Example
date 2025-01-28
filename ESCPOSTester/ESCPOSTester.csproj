@@ -80,9 +80,8 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NumericUpDownLib, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dirkster.NumericUpDownLib.2.1.1\lib\net4\NumericUpDownLib.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="NumericUpDownLib, Version=3.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dirkster.NumericUpDownLib.3.4.0\lib\net40\NumericUpDownLib.dll</HintPath>
     </Reference>
     <Reference Include="SXN.Core, Version=4.1.311.2, Culture=neutral, PublicKeyToken=d330946dddc91495, processorArchitecture=MSIL">
       <HintPath>..\packages\System.4.1.0311.2\lib\net451\SXN.Core.dll</HintPath>
